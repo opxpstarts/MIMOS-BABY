@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'PIX não gerado. Tente novamente.' }, { status: 502 });
       }
       const qrcodeImage = await QRCode.toDataURL(pixText, { width: 256, margin: 2 });
-      return NextResponse.json({ pix: { qrcodeImage, copyText: pixText } });
+      return NextResponse.json({ pix: { qrcodeImage, copyText: pixText, transactionId: data.id } });
     }
 
     return NextResponse.json(data);

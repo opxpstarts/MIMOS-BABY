@@ -78,7 +78,7 @@ export default function CheckoutPage() {
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState('');
-  const [pixData, setPixData] = useState<{ qrcodeImage: string; copyText: string } | null>(null);
+  const [pixData, setPixData] = useState<{ qrcodeImage: string; copyText: string; transactionId: number } | null>(null);
 
   const set = (field: keyof FormData, value: string) => {
     setForm(f => ({ ...f, [field]: value }));
@@ -155,7 +155,7 @@ export default function CheckoutPage() {
       }
 
       if (data.pix?.qrcodeImage && data.pix?.copyText) {
-        setPixData({ qrcodeImage: data.pix.qrcodeImage, copyText: data.pix.copyText });
+        setPixData({ qrcodeImage: data.pix.qrcodeImage, copyText: data.pix.copyText, transactionId: data.pix.transactionId });
       } else {
         setDone(true);
       }
@@ -188,42 +188,7 @@ export default function CheckoutPage() {
 
   // Tela PIX aguardando pagamento
   if (pixData) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4">
-        <div className="bg-white rounded-2xl shadow-xl p-6 max-w-sm w-full text-center">
-          <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-3">
-            <svg className="w-6 h-6 text-teal-500" viewBox="0 0 32 32" fill="currentColor">
-              <path d="M16 2C8.268 2 2 8.268 2 16s6.268 14 14 14 14-6.268 14-14S23.732 2 16 2zm-3.5 9.5l3.5 3.5 3.5-3.5 1.5 1.5L17 17l3.5 3.5-1.5 1.5L16 18.5l-3.5 3.5-1.5-1.5L14.5 17 11 13.5l1.5-1.5z"/>
-            </svg>
-          </div>
-          <h2 className="text-base font-bold text-gray-900 mb-1">Pague com PIX</h2>
-          <p className="text-xs text-gray-500 mb-4">Escaneie o QR Code ou copie o código abaixo</p>
-
-          <img src={pixData.qrcodeImage} alt="QR Code PIX" className="w-48 h-48 mx-auto mb-4 rounded-xl border border-gray-100" />
-
-          <p className="text-xl font-bold text-green-600 mb-4">{formatPrice(pixPrice)}</p>
-
-          <button
-            onClick={() => { navigator.clipboard.writeText(pixData.copyText); }}
-            className="w-full flex items-center justify-center gap-2 bg-orange-50 border border-orange-200 text-orange-600 font-semibold text-sm py-3 rounded-xl mb-3 hover:bg-orange-100 transition-colors"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-            </svg>
-            Copiar código PIX
-          </button>
-
-          <button
-            onClick={() => setDone(true)}
-            className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold py-3 rounded-xl text-sm"
-          >
-            Já realizei o pagamento
-          </button>
-
-          <p className="text-[10px] text-gray-400 mt-3">O QR Code expira em 2 horas</p>
-        </div>
-      </div>
-    );
+    return <PixScreen pixData={pixData} pixPrice={pixPrice} onPaid={() => setDone(true)} />;
   }
 
   if (done) {
@@ -546,4 +511,83 @@ function input(error?: string) {
       ? 'border-red-400 focus:ring-2 focus:ring-red-200'
       : 'border-gray-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100'
   }`;
+}
+
+function PixScreen({
+  pixData,
+  pixPrice,
+  onPaid,
+}: {
+  pixData: { qrcodeImage: string; copyText: string; transactionId: number };
+  pixPrice: number;
+  onPaid: () => void;
+}) {
+  const [copied, setCopied] = useState(false);
+  const [checking, setChecking] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (checking) return;
+      setChecking(true);
+      try {
+        const res = await fetch(`/api/payment/status?id=${pixData.transactionId}`);
+        const data = await res.json();
+        if (data.status === 'paid') {
+          clearInterval(interval);
+          onPaid();
+        }
+      } catch {
+        // silencioso — tenta de novo no próximo ciclo
+      } finally {
+        setChecking(false);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [pixData.transactionId, onPaid, checking]);
+
+  const copy = () => {
+    navigator.clipboard.writeText(pixData.copyText);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4">
+      <div className="bg-white rounded-2xl shadow-xl p-6 max-w-sm w-full text-center">
+        <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-3">
+          <svg className="w-6 h-6 text-teal-500" viewBox="0 0 32 32" fill="currentColor">
+            <path d="M16 2C8.268 2 2 8.268 2 16s6.268 14 14 14 14-6.268 14-14S23.732 2 16 2zm4.95-3.54l-7.07 7.07-3.54-3.54-1.41 1.41 4.95 4.95 8.49-8.49-1.42-1.4z"/>
+          </svg>
+        </div>
+
+        <h2 className="text-base font-bold text-gray-900 mb-1">Pague com PIX</h2>
+        <p className="text-xs text-gray-500 mb-4">Escaneie o QR Code ou copie o código abaixo</p>
+
+        <img src={pixData.qrcodeImage} alt="QR Code PIX" className="w-48 h-48 mx-auto mb-4 rounded-xl border border-gray-100" />
+
+        <p className="text-xl font-bold text-green-600 mb-4">{formatPrice(pixPrice)}</p>
+
+        <button
+          onClick={copy}
+          className="w-full flex items-center justify-center gap-2 bg-orange-50 border border-orange-200 text-orange-600 font-semibold text-sm py-3 rounded-xl mb-4 hover:bg-orange-100 transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          </svg>
+          {copied ? 'Copiado!' : 'Copiar código PIX'}
+        </button>
+
+        <div className="flex items-center justify-center gap-2 text-xs text-gray-400">
+          <svg className="w-3.5 h-3.5 animate-spin text-orange-400" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+          </svg>
+          Aguardando confirmação do pagamento...
+        </div>
+
+        <p className="text-[10px] text-gray-300 mt-3">O QR Code expira em 2 horas</p>
+      </div>
+    </div>
+  );
 }
