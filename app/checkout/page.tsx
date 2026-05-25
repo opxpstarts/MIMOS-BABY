@@ -524,7 +524,9 @@ function PixScreen({
 }) {
   const [copied, setCopied] = useState(false);
   const [checking, setChecking] = useState(false);
+  const [seconds, setSeconds] = useState(7200);
 
+  // polling de status
   useEffect(() => {
     const interval = setInterval(async () => {
       if (checking) return;
@@ -536,57 +538,145 @@ function PixScreen({
           clearInterval(interval);
           onPaid();
         }
-      } catch {
-        // silencioso — tenta de novo no próximo ciclo
-      } finally {
-        setChecking(false);
-      }
+      } catch {}
+      finally { setChecking(false); }
     }, 5000);
-
     return () => clearInterval(interval);
   }, [pixData.transactionId, onPaid, checking]);
+
+  // countdown 2h
+  useEffect(() => {
+    const t = setInterval(() => setSeconds(s => (s > 0 ? s - 1 : 0)), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  const mm = String(Math.floor(seconds / 60)).padStart(2, '0');
+  const ss = String(seconds % 60).padStart(2, '0');
 
   const copy = () => {
     navigator.clipboard.writeText(pixData.copyText);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setTimeout(() => setCopied(false), 2500);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4">
-      <div className="bg-white rounded-2xl shadow-xl p-6 max-w-sm w-full text-center">
-        <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-3">
-          <svg className="w-6 h-6 text-teal-500" viewBox="0 0 32 32" fill="currentColor">
-            <path d="M16 2C8.268 2 2 8.268 2 16s6.268 14 14 14 14-6.268 14-14S23.732 2 16 2zm4.95-3.54l-7.07 7.07-3.54-3.54-1.41 1.41 4.95 4.95 8.49-8.49-1.42-1.4z"/>
-          </svg>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+
+      {/* Header laranja */}
+      <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-5 text-white text-center shadow-md">
+        <div className="flex items-center justify-center gap-2 mb-1">
+          <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
+            <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <span className="text-sm font-bold">Pedido gerado com sucesso!</span>
+        </div>
+        <p className="text-orange-100 text-xs">Conclua o pagamento para confirmar seu pedido</p>
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-4 py-5 max-w-sm mx-auto w-full space-y-4">
+
+        {/* Card valor + timer */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex items-center justify-between">
+          <div>
+            <p className="text-[11px] text-gray-400 font-medium uppercase tracking-wide">Valor a pagar</p>
+            <p className="text-2xl font-bold text-green-600">{formatPrice(pixPrice)}</p>
+            <p className="text-[10px] text-orange-500 font-semibold mt-0.5">5% de desconto no PIX</p>
+          </div>
+          <div className="text-right">
+            <p className="text-[11px] text-gray-400 font-medium uppercase tracking-wide mb-1">Expira em</p>
+            <div className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-sm font-bold tabular-nums ${seconds < 300 ? 'bg-red-50 text-red-500' : 'bg-orange-50 text-orange-600'}`}>
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {mm}:{ss}
+            </div>
+          </div>
         </div>
 
-        <h2 className="text-base font-bold text-gray-900 mb-1">Pague com PIX</h2>
-        <p className="text-xs text-gray-500 mb-4">Escaneie o QR Code ou copie o código abaixo</p>
+        {/* Card QR Code */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 text-center">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">Escaneie o QR Code</p>
+          <div className="relative inline-block">
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-orange-100 to-orange-50 blur-xl opacity-60" />
+            <img
+              src={pixData.qrcodeImage}
+              alt="QR Code PIX"
+              className="relative w-52 h-52 rounded-2xl border-2 border-orange-100 shadow-sm"
+            />
+          </div>
+          <p className="text-[11px] text-gray-400 mt-4">Abra o app do seu banco e escaneie</p>
+        </div>
 
-        <img src={pixData.qrcodeImage} alt="QR Code PIX" className="w-48 h-48 mx-auto mb-4 rounded-xl border border-gray-100" />
+        {/* Divider ou */}
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-px bg-gray-200" />
+          <span className="text-xs text-gray-400 font-medium">ou copie o código</span>
+          <div className="flex-1 h-px bg-gray-200" />
+        </div>
 
-        <p className="text-xl font-bold text-green-600 mb-4">{formatPrice(pixPrice)}</p>
-
+        {/* Botão copiar */}
         <button
           onClick={copy}
-          className="w-full flex items-center justify-center gap-2 bg-orange-50 border border-orange-200 text-orange-600 font-semibold text-sm py-3 rounded-xl mb-4 hover:bg-orange-100 transition-colors"
+          className={`w-full flex items-center justify-center gap-2 font-bold py-4 rounded-xl text-sm shadow-md active:scale-95 transition-all ${
+            copied
+              ? 'bg-green-500 text-white'
+              : 'bg-gradient-to-r from-orange-500 to-orange-600 text-white'
+          }`}
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-          {copied ? 'Copiado!' : 'Copiar código PIX'}
+          {copied ? (
+            <>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+              </svg>
+              Código copiado!
+            </>
+          ) : (
+            <>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              Copiar código PIX
+            </>
+          )}
         </button>
 
-        <div className="flex items-center justify-center gap-2 text-xs text-gray-400">
-          <svg className="w-3.5 h-3.5 animate-spin text-orange-400" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
-          </svg>
-          Aguardando confirmação do pagamento...
+        {/* Status aguardando */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-4 py-3 flex items-center gap-3">
+          <div className="relative flex-shrink-0">
+            <div className="w-3 h-3 bg-orange-400 rounded-full animate-ping absolute" />
+            <div className="w-3 h-3 bg-orange-500 rounded-full relative" />
+          </div>
+          <div>
+            <p className="text-xs font-bold text-gray-800">Aguardando seu pagamento</p>
+            <p className="text-[10px] text-gray-400">A confirmação é automática após o pagamento</p>
+          </div>
         </div>
 
-        <p className="text-[10px] text-gray-300 mt-3">O QR Code expira em 2 horas</p>
+        {/* Selos */}
+        <div className="flex items-center justify-center gap-4 py-2">
+          <div className="flex items-center gap-1 text-[11px] text-gray-400">
+            <svg className="w-3.5 h-3.5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+            </svg>
+            SSL seguro
+          </div>
+          <div className="flex items-center gap-1 text-[11px] text-gray-400">
+            <svg className="w-3.5 h-3.5 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z" clipRule="evenodd" />
+            </svg>
+            Dados protegidos
+          </div>
+          <div className="flex items-center gap-1 text-[11px] text-gray-400">
+            <svg className="w-3.5 h-3.5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+              <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" />
+            </svg>
+            Pix seguro
+          </div>
+        </div>
+
       </div>
     </div>
   );
