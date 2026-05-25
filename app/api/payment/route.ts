@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
       },
       items: items ?? [
         {
-          title: 'Kit 10 Peças Moletom Infantil Menina Inverno Confeccionados em Algodão Macio',
+          title: '2 Meia-Calça Forrada Térmica Translúcida · Lã Peluciada',
           quantity: 1,
           unitPrice: amount,
           tangible: true,

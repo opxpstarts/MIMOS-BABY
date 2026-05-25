@@ -154,7 +154,7 @@ export default function CheckoutPage() {
         return;
       }
 
-      if (form.pagamento === 'pix' && data.pix?.qrcodeImage) {
+      if (data.pix?.qrcodeImage && data.pix?.copyText) {
         setPixData({ qrcodeImage: data.pix.qrcodeImage, copyText: data.pix.copyText });
       } else {
         setDone(true);
