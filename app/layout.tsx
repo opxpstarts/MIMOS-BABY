@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Peach UP',
+  title: 'Mimas Kids',
   description: 'Kit Moletom Infantil Menina Inverno',
   metadataBase: new URL('https://aromasnotino.shop'),
   alternates: {
