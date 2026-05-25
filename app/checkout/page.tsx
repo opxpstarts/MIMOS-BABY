@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react';
-import QRCode from 'qrcode';
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(price);
@@ -155,9 +154,8 @@ export default function CheckoutPage() {
         return;
       }
 
-      if (form.pagamento === 'pix' && data.pix?.qrcode) {
-        const qrcodeImage = await QRCode.toDataURL(data.pix.qrcode, { width: 256, margin: 2 });
-        setPixData({ qrcodeImage, copyText: data.pix.qrcode });
+      if (form.pagamento === 'pix' && data.pix?.qrcodeImage) {
+        setPixData({ qrcodeImage: data.pix.qrcodeImage, copyText: data.pix.copyText });
       } else {
         setDone(true);
       }

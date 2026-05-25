@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
+import QRCode from 'qrcode';
 
 const PRIMECASH_URL = 'https://api.primecashbrasil.com/v1/transactions';
 
 function getAuthHeader() {
   const key = process.env.PRIMECASH_SECRET_KEY ?? '';
   return 'Basic ' + Buffer.from(`${key}:x`).toString('base64');
+}
+
+function parseError(data: unknown): string {
+  if (!data || typeof data !== 'object') return 'Erro ao processar pagamento.';
+  const d = data as Record<string, unknown>;
+  if (typeof d.message === 'string') return d.message;
+  if (Array.isArray(d.error)) return d.error[0] as string;
+  if (typeof d.error === 'string') return d.error;
+  return 'Erro ao processar pagamento.';
 }
 
 export async function POST(req: NextRequest) {
@@ -54,14 +64,6 @@ export async function POST(req: NextRequest) {
       };
     }
 
-    if (paymentMethod === 'pix') {
-      const expiration = new Date();
-      expiration.setHours(expiration.getHours() + 2);
-      payload.pix = {
-        expirationDate: expiration.toISOString().split('T')[0],
-      };
-    }
-
     const response = await fetch(PRIMECASH_URL, {
       method: 'POST',
       headers: {
@@ -74,10 +76,16 @@ export async function POST(req: NextRequest) {
     const data = await response.json();
 
     if (!response.ok) {
-      return NextResponse.json(
-        { error: data?.message ?? 'Erro ao processar pagamento.' },
-        { status: response.status }
-      );
+      return NextResponse.json({ error: parseError(data) }, { status: response.status });
+    }
+
+    if (paymentMethod === 'pix') {
+      const pixText = data?.pix?.qrcode;
+      if (!pixText) {
+        return NextResponse.json({ error: 'PIX não gerado. Tente novamente.' }, { status: 502 });
+      }
+      const qrcodeImage = await QRCode.toDataURL(pixText, { width: 256, margin: 2 });
+      return NextResponse.json({ pix: { qrcodeImage, copyText: pixText } });
     }
 
     return NextResponse.json(data);
