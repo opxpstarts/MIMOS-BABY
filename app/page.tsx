@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
 
 export default function Home() {
-  redirect('/meu-produto');
+  redirect('/kit-10-peca-moletomin-fantil');
 }

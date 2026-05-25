@@ -235,7 +235,7 @@ export default function CheckoutPage() {
             Obrigado, <span className="font-semibold text-orange-500">{form.nome.split(' ')[0]}</span>!<br />
             Você receberá a confirmação em <span className="font-semibold">{form.email}</span>.
           </p>
-          <a href="/meu-produto" className="block w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold py-3 rounded-xl text-sm">
+          <a href="/kit-10-peca-moletomin-fantil" className="block w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold py-3 rounded-xl text-sm">
             Voltar à loja
           </a>
         </div>
@@ -244,11 +244,11 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="h-screen flex flex-col bg-gray-50 overflow-hidden">
       {/* Header */}
-      <div className="bg-white shadow-sm sticky top-0 z-30">
+      <div className="bg-white shadow-sm flex-shrink-0 z-30">
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
-          <a href="/meu-produto">
+          <a href="/kit-10-peca-moletomin-fantil">
             <img src="/images/Logo.png" alt="Peach UP" className="h-20 object-contain" />
           </a>
           <div className="flex items-center gap-1 text-xs text-gray-500">
@@ -289,7 +289,8 @@ export default function CheckoutPage() {
         </div>
       </div>
 
-      <div className="max-w-lg mx-auto px-4 py-4">
+      <div className="flex-1 overflow-y-auto">
+      <div className="max-w-lg mx-auto px-4 py-4 pb-36">
         {/* Resumo do pedido */}
         <div className="bg-white rounded-xl border border-gray-200 p-4 mb-4">
           <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">Resumo do pedido</p>
@@ -479,15 +480,17 @@ export default function CheckoutPage() {
           </div>
         )}
 
-        {/* Erro de API */}
+      </div>
+      </div>
+
+      {/* Rodapé fixo — botões + erro + selos */}
+      <div className="flex-shrink-0 bg-white border-t border-gray-100 px-4 pt-3 pb-5 shadow-[0_-4px_16px_rgba(0,0,0,0.06)]">
         {apiError && (
-          <div className="mt-4 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-600 font-medium">
+          <div className="mb-3 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-600 font-medium">
             {apiError}
           </div>
         )}
-
-        {/* Botões de navegação */}
-        <div className="mt-4 space-y-3">
+        <div className="max-w-lg mx-auto space-y-2">
           <button
             onClick={next}
             disabled={loading}
@@ -508,28 +511,26 @@ export default function CheckoutPage() {
               ← Voltar
             </button>
           )}
-        </div>
-
-        {/* Selos de segurança */}
-        <div className="flex items-center justify-center gap-4 mt-6 mb-8">
-          <div className="flex items-center gap-1 text-xs text-gray-400">
-            <svg className="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-            </svg>
-            SSL seguro
-          </div>
-          <div className="flex items-center gap-1 text-xs text-gray-400">
-            <svg className="w-4 h-4 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z" clipRule="evenodd" />
-            </svg>
-            Dados protegidos
-          </div>
-          <div className="flex items-center gap-1 text-xs text-gray-400">
-            <svg className="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
-              <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" />
-            </svg>
-            Pagamento seguro
+          <div className="flex items-center justify-center gap-4 pt-1">
+            <div className="flex items-center gap-1 text-xs text-gray-400">
+              <svg className="w-3.5 h-3.5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+              </svg>
+              SSL seguro
+            </div>
+            <div className="flex items-center gap-1 text-xs text-gray-400">
+              <svg className="w-3.5 h-3.5 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z" clipRule="evenodd" />
+              </svg>
+              Dados protegidos
+            </div>
+            <div className="flex items-center gap-1 text-xs text-gray-400">
+              <svg className="w-3.5 h-3.5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+                <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" />
+              </svg>
+              Pagamento seguro
+            </div>
           </div>
         </div>
       </div>
@@ -548,7 +549,7 @@ function Field({ label, error, children }: { label: string; error?: string; chil
 }
 
 function input(error?: string) {
-  return `w-full px-3 py-2.5 text-sm border rounded-xl outline-none transition-all ${
+  return `w-full px-3 py-2.5 text-base border rounded-xl outline-none transition-all ${
     error
       ? 'border-red-400 focus:ring-2 focus:ring-red-200'
       : 'border-gray-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100'
