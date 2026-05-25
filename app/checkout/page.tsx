@@ -616,6 +616,14 @@ function PixScreen({
           <div className="flex-1 h-px bg-gray-200" />
         </div>
 
+        {/* Preview do código PIX */}
+        <div className="bg-white rounded-xl border border-gray-200 px-4 py-3">
+          <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide mb-1">Código PIX</p>
+          <p className="text-xs text-gray-600 font-mono break-all leading-relaxed">
+            {pixData.copyText.slice(0, 60)}<span className="text-gray-300">...</span>
+          </p>
+        </div>
+
         {/* Botão copiar */}
         <button
           onClick={copy}
