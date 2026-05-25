@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react';
+import QRCode from 'qrcode';
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(price);
@@ -53,9 +54,16 @@ const INITIAL: FormData = {
 };
 
 function mask(value: string, pattern: string) {
-  let i = 0;
   const v = value.replace(/\D/g, '');
-  return pattern.replace(/#/g, () => v[i++] ?? '').replace(/#.*/, '');
+  if (!v) return '';
+  let result = '';
+  let vi = 0;
+  for (const char of pattern) {
+    if (vi >= v.length) break;
+    if (char === '#') result += v[vi++];
+    else result += char;
+  }
+  return result;
 }
 
 export default function CheckoutPage() {
@@ -71,7 +79,7 @@ export default function CheckoutPage() {
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState('');
-  const [pixData, setPixData] = useState<{ qrcode: string; url: string } | null>(null);
+  const [pixData, setPixData] = useState<{ qrcodeImage: string; copyText: string } | null>(null);
 
   const set = (field: keyof FormData, value: string) => {
     setForm(f => ({ ...f, [field]: value }));
@@ -147,8 +155,9 @@ export default function CheckoutPage() {
         return;
       }
 
-      if (form.pagamento === 'pix' && data.pix) {
-        setPixData({ qrcode: data.pix.qrcode, url: data.pix.url });
+      if (form.pagamento === 'pix' && data.pix?.qrcode) {
+        const qrcodeImage = await QRCode.toDataURL(data.pix.qrcode, { width: 256, margin: 2 });
+        setPixData({ qrcodeImage, copyText: data.pix.qrcode });
       } else {
         setDone(true);
       }
@@ -192,14 +201,12 @@ export default function CheckoutPage() {
           <h2 className="text-base font-bold text-gray-900 mb-1">Pague com PIX</h2>
           <p className="text-xs text-gray-500 mb-4">Escaneie o QR Code ou copie o código abaixo</p>
 
-          {pixData.qrcode && (
-            <img src={pixData.qrcode} alt="QR Code PIX" className="w-48 h-48 mx-auto mb-4 rounded-xl border border-gray-100" />
-          )}
+          <img src={pixData.qrcodeImage} alt="QR Code PIX" className="w-48 h-48 mx-auto mb-4 rounded-xl border border-gray-100" />
 
           <p className="text-xl font-bold text-green-600 mb-4">{formatPrice(pixPrice)}</p>
 
           <button
-            onClick={() => { navigator.clipboard.writeText(pixData.url); }}
+            onClick={() => { navigator.clipboard.writeText(pixData.copyText); }}
             className="w-full flex items-center justify-center gap-2 bg-orange-50 border border-orange-200 text-orange-600 font-semibold text-sm py-3 rounded-xl mb-3 hover:bg-orange-100 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -463,19 +470,6 @@ export default function CheckoutPage() {
               </div>
             )}
 
-            {/* PIX — info */}
-            {form.pagamento === 'pix' && (
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 text-center">
-                <div className="w-32 h-32 bg-gray-100 rounded-xl mx-auto mb-3 flex items-center justify-center">
-                  <svg className="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-                  </svg>
-                </div>
-                <p className="text-xs text-gray-500 mb-1">QR Code gerado após confirmar</p>
-                <p className="text-lg font-bold text-green-600">{formatPrice(pixPrice)}</p>
-                <p className="text-xs text-gray-400">5% de desconto no PIX</p>
-              </div>
-            )}
 
           </div>
         )}

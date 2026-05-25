@@ -39,6 +39,7 @@ export async function POST(req: NextRequest) {
           title: 'Kit 10 Peças Moletom Infantil Menina Inverno Confeccionados em Algodão Macio',
           quantity: 1,
           unitPrice: amount,
+          tangible: true,
         },
       ],
     };
