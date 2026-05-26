@@ -977,19 +977,19 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
 
         {/* FAQ */}
         {dp.faq && dp.faq.length > 0 && (
-          <div id="faq" className="mb-4">
-            <h3 className="text-base font-bold text-gray-900 mb-3">
+          <div id="faq" className="mb-3">
+            <h3 className="text-sm font-bold text-gray-900 mb-2">
               Perguntas Frequentes
             </h3>
-            <div className="space-y-2">
+            <div className="space-y-1">
               {dp.faq.map((item, idx) => (
-                <details key={idx} className="bg-white border border-gray-200 rounded-xl overflow-hidden group">
-                  <summary className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 transition-colors">
-                    <span className="font-semibold text-sm text-gray-900 pr-4">
+                <details key={idx} className="bg-white border border-gray-200 rounded-lg overflow-hidden group">
+                  <summary className="flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-gray-50 transition-colors">
+                    <span className="font-medium text-xs text-gray-900 pr-3">
                       {item.question}
                     </span>
                     <svg
-                      className="w-4 h-4 text-gray-500 transition-transform group-open:rotate-180 flex-shrink-0"
+                      className="w-3.5 h-3.5 text-gray-400 transition-transform group-open:rotate-180 flex-shrink-0"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -997,7 +997,7 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </summary>
-                  <div className="px-3 pb-3 text-xs text-gray-700 border-t border-gray-200 pt-2">
+                  <div className="px-3 pb-2 text-[11px] text-gray-600 border-t border-gray-100 pt-1.5">
                     {item.answer}
                   </div>
                 </details>
@@ -1006,111 +1006,67 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
           </div>
         )}
 
-        {/* Benefícios de Compra */}
-        <div id="beneficios" className="bg-white border-2 border-orange-200 rounded-xl p-4 mb-4 shadow-md">
-          <h3 className="text-xs font-bold text-orange-500 mb-3 text-center uppercase tracking-widest">
-            ✓ Por que comprar conosco?
-          </h3>
-        </div>
-
         {/* Espaçamento para o footer */}
-        <div className="h-4"></div>
+        <div className="h-2"></div>
       </main>
 
       {/* Footer */}
       <footer className="bg-gradient-to-b from-orange-500 to-orange-700 text-white">
-
-        {/* Bloco principal */}
-        <div className="max-w-2xl mx-auto px-5 pt-10 pb-6">
+        <div className="max-w-2xl mx-auto px-4 pt-6 pb-4">
 
           {/* Logo + tagline */}
-          <div className="text-center mb-7">
-            <img src={logoUrl} alt="Mimas Kids" className="h-32 object-contain mx-auto drop-shadow-md" />
-            <p className="text-sm font-medium opacity-90 mt-2 tracking-wide">Moda Infantil com Carinho ✨</p>
+          <div className="text-center mb-4">
+            <img src={logoUrl} alt="Mimas Kids" className="h-20 object-contain mx-auto drop-shadow-md" />
+            <p className="text-xs font-medium opacity-80 mt-1 tracking-wide">Moda Infantil com Carinho ✨</p>
           </div>
 
-
-          {/* Links + Atendimento lado a lado */}
-          <div className="grid grid-cols-2 gap-4 mb-7 text-sm">
+          {/* Links + Atendimento */}
+          <div className="grid grid-cols-2 gap-3 mb-4 text-xs">
             <div>
-              <p className="text-[10px] uppercase tracking-widest font-bold opacity-60 mb-3">Informações</p>
-              <ul className="space-y-2">
+              <p className="text-[9px] uppercase tracking-widest font-bold opacity-50 mb-2">Informações</p>
+              <ul className="space-y-1.5">
                 <li>
-                  <a href="/politica-de-privacidade" className="flex items-center gap-1.5 opacity-85 hover:opacity-100 transition-opacity">
-                    <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <span className="text-xs">Política de Privacidade</span>
+                  <a href="/politica-de-privacidade" className="opacity-80 hover:opacity-100 transition-opacity">
+                    Política de Privacidade
                   </a>
                 </li>
                 <li>
-                  <a href="/politica-de-trocas-e-devolucoes" className="flex items-center gap-1.5 opacity-85 hover:opacity-100 transition-opacity">
-                    <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    <span className="text-xs">Trocas e Devoluções</span>
+                  <a href="/politica-de-trocas-e-devolucoes" className="opacity-80 hover:opacity-100 transition-opacity">
+                    Trocas e Devoluções
                   </a>
                 </li>
               </ul>
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-widest font-bold opacity-60 mb-3">Atendimento</p>
-              <ul className="space-y-2">
-                <li className="flex items-center gap-1.5 opacity-85">
-                  <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                  <span className="text-xs">contato@mimusbaby.shop</span>
-                </li>
-                <li className="flex items-center gap-1.5 opacity-85">
-                  <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span className="text-xs">Seg–Sex, 9h às 18h</span>
-                </li>
+              <p className="text-[9px] uppercase tracking-widest font-bold opacity-50 mb-2">Atendimento</p>
+              <ul className="space-y-1.5 opacity-80">
+                <li>contato@mimusbaby.shop</li>
+                <li>Seg–Sex, 9h às 18h</li>
               </ul>
             </div>
           </div>
 
           {/* Formas de pagamento */}
-          <div className="mb-7">
-            <p className="text-[10px] uppercase tracking-widest font-bold opacity-60 mb-3 text-center">Formas de pagamento</p>
-            <div className="flex items-center justify-center gap-2 flex-wrap">
-              <div className="bg-white rounded-md px-2.5 py-1.5 shadow-sm">
-                <svg viewBox="0 0 38 24" className="h-4 w-7" aria-label="Visa">
-                  <rect width="38" height="24" rx="3" fill="#1A1F71"/>
-                  <text x="5" y="17" fill="white" fontSize="13" fontWeight="bold" fontFamily="Arial">VISA</text>
-                </svg>
-              </div>
-              <div className="bg-white rounded-md px-2 py-1.5 shadow-sm flex items-center">
-                <div className="w-5 h-5 rounded-full bg-red-500"/>
-                <div className="w-5 h-5 rounded-full bg-yellow-400 -ml-2.5"/>
-              </div>
-              <div className="bg-white rounded-md px-2.5 py-1.5 shadow-sm">
-                <span className="text-[11px] font-bold text-teal-600 tracking-tight">PIX</span>
-              </div>
-              <div className="bg-white rounded-md px-2.5 py-1.5 shadow-sm">
-                <span className="text-[11px] font-bold text-gray-700">Boleto</span>
-              </div>
-              <div className="bg-white rounded-md px-2.5 py-1.5 shadow-sm">
-                <span className="text-[11px] font-bold text-blue-700">ELO</span>
-              </div>
-              <div className="bg-white rounded-md px-2.5 py-1.5 shadow-sm">
-                <span className="text-[11px] font-bold text-gray-600">Hiper</span>
-              </div>
+          <div className="flex items-center justify-center gap-1.5 flex-wrap mb-4">
+            <div className="bg-white rounded px-2 py-1">
+              <svg viewBox="0 0 38 24" className="h-3.5 w-7" aria-label="Visa">
+                <rect width="38" height="24" rx="3" fill="#1A1F71"/>
+                <text x="5" y="17" fill="white" fontSize="13" fontWeight="bold" fontFamily="Arial">VISA</text>
+              </svg>
             </div>
+            <div className="bg-white rounded px-1.5 py-1 flex items-center">
+              <div className="w-4 h-4 rounded-full bg-red-500"/>
+              <div className="w-4 h-4 rounded-full bg-yellow-400 -ml-2"/>
+            </div>
+            <div className="bg-white rounded px-2 py-1"><span className="text-[10px] font-bold text-teal-600">PIX</span></div>
+            <div className="bg-white rounded px-2 py-1"><span className="text-[10px] font-bold text-gray-700">Boleto</span></div>
+            <div className="bg-white rounded px-2 py-1"><span className="text-[10px] font-bold text-blue-700">ELO</span></div>
           </div>
 
-          {/* Divisor */}
-          <div className="border-t border-white/20 mb-5" />
-
-          {/* CNPJ + Copyright */}
-          <div className="text-center space-y-1.5">
-            <p className="text-xs font-semibold opacity-90">© Mimas Kids 2026 – Todos os direitos reservados.</p>
-            <p className="text-[11px] opacity-70">CNPJ: 46.281.061/0001-75 · Mimas Kids – Moda Infantil</p>
-            <p className="text-[10px] leading-relaxed opacity-55 max-w-sm mx-auto pt-1">
-              Valores e condições podem mudar sem aviso prévio. As imagens dos produtos são meramente ilustrativas.
-            </p>
+          {/* Divisor + Copyright */}
+          <div className="border-t border-white/20 pt-3 text-center">
+            <p className="text-[10px] font-semibold opacity-80">© Mimas Kids 2026 – Todos os direitos reservados.</p>
+            <p className="text-[10px] opacity-55 mt-0.5">CNPJ: 46.281.061/0001-75</p>
           </div>
 
         </div>
