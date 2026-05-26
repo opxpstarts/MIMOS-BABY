@@ -458,7 +458,7 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
 
             {sizeSheetOpen && (
               <div className="absolute left-0 right-0 z-20 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
-                {['2-3 anos', '3-4 anos', '5-6 anos', '7-8 anos', '9-10 anos'].map((size, i, arr) => (
+                {['1-2 anos', '2-3 anos', '3-4 anos', '5-6 anos', '7-8 anos', '9-10 anos'].map((size, i, arr) => (
                   <button
                     key={size}
                     onClick={() => { setSelectedSize(size); setSizeSheetOpen(false); }}
