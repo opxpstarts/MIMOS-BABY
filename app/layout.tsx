@@ -3,7 +3,7 @@ import Script from 'next/script'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Mimas Kids',
+  title: 'Mimus Kids',
   description: 'Kit Moletom Infantil Menina Inverno',
   metadataBase: new URL('https://aromasnotino.shop'),
   alternates: {

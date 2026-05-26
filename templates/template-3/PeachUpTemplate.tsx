@@ -1016,7 +1016,7 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
 
           {/* Logo + tagline */}
           <div className="text-center mb-4">
-            <img src={logoUrl} alt="Mimas Kids" className="h-20 object-contain mx-auto drop-shadow-md" />
+            <img src={logoUrl} alt="Mimus Kids" className="h-20 object-contain mx-auto drop-shadow-md" />
             <p className="text-xs font-medium opacity-80 mt-1 tracking-wide">Moda Infantil com Carinho ✨</p>
           </div>
 
@@ -1048,7 +1048,7 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
 
           {/* Divisor + Copyright */}
           <div className="border-t border-white/20 pt-3 text-center">
-            <p className="text-[10px] font-semibold opacity-80">© Mimas Kids 2026 – Todos os direitos reservados.</p>
+            <p className="text-[10px] font-semibold opacity-80">© Mimus Kids 2026 – Todos os direitos reservados.</p>
             <p className="text-[10px] opacity-55 mt-0.5">CNPJ: 46.281.061/0001-75</p>
           </div>
 

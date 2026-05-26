@@ -18,7 +18,7 @@ type CartItem = {
 
 const FALLBACK_PRODUCT: CartItem = {
   title: 'Kit 10 Peças Moletom Infantil Menina Inverno Confeccionados em Algodão Macio',
-  brand: 'Mimas Kids',
+  brand: 'Mimus Kids',
   price: 89.90,
   image: '/images/Foto01.webp',
   quantity: 1,
@@ -234,7 +234,7 @@ export default function CheckoutPage() {
       <div className="bg-white shadow-sm flex-shrink-0 z-30">
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
           <a href="/kit-10-peca-moletomin-fantil">
-            <img src="/images/Logo.png" alt="Mimas Kids" className="h-20 object-contain" />
+            <img src="/images/Logo.png" alt="Mimus Kids" className="h-20 object-contain" />
           </a>
           <div className="flex items-center gap-1 text-xs text-gray-500">
             <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">

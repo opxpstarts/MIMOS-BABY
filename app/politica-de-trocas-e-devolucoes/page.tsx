@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Política de Trocas e Devoluções – Mimas Kids',
+  title: 'Política de Trocas e Devoluções – Mimus Kids',
   description: 'Veja nossa política de trocas, devoluções e reembolso. Troca grátis em 30 dias.',
 };
 
@@ -12,7 +12,7 @@ export default function PoliticaDeTrocas() {
       {/* Header */}
       <header className="bg-gradient-to-r from-orange-500 to-orange-600 text-white py-5 px-4 shadow-md">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
-          <Link href="/" className="text-white font-bold text-lg">← Mimas Kids</Link>
+          <Link href="/" className="text-white font-bold text-lg">← Mimus Kids</Link>
           <span className="text-sm opacity-80">Trocas e Devoluções</span>
         </div>
       </header>
@@ -125,7 +125,7 @@ export default function PoliticaDeTrocas() {
           <section>
             <h2 className="text-base font-bold text-gray-900 mb-3">7. Contato</h2>
             <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-              <p><strong>Mimas Kids</strong></p>
+              <p><strong>Mimus Kids</strong></p>
               <p>CNPJ: 46.281.061/0001-75</p>
               <p>E-mail: contato@mimusbaby.shop</p>
               <p className="mt-1 text-xs text-gray-500">Horário de atendimento: seg. a sex., 9h às 18h</p>
@@ -135,7 +135,7 @@ export default function PoliticaDeTrocas() {
       </main>
 
       <footer className="bg-gradient-to-r from-orange-500 to-orange-600 text-white py-6 px-4 mt-10 text-center text-xs">
-        <p>© Mimas Kids 2026 – Todos os direitos reservados.</p>
+        <p>© Mimus Kids 2026 – Todos os direitos reservados.</p>
         <div className="flex justify-center gap-4 mt-2 opacity-90">
           <Link href="/politica-de-privacidade" className="underline">Privacidade</Link>
           <Link href="/politica-de-trocas-e-devolucoes" className="underline">Trocas e Devoluções</Link>
