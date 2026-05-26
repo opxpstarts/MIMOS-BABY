@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react';
+import { fbEvents } from '@/lib/fbevents';
+import { ttkEvents } from '@/lib/ttkevents';
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(price);
@@ -72,7 +74,10 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     const cart: CartItem[] = JSON.parse(localStorage.getItem('cart') || '[]');
+    const item = cart.length > 0 ? cart[0] : FALLBACK_PRODUCT;
     if (cart.length > 0) setProduct(cart[0]);
+    fbEvents.initiateCheckout({ value: item.price });
+    ttkEvents.initiateCheckout({ value: item.price });
   }, []);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const [done, setDone] = useState(false);
@@ -111,7 +116,15 @@ export default function CheckoutPage() {
     return Object.keys(e).length === 0;
   };
 
+  const handlePaymentSuccess = (finalValue: number) => {
+    fbEvents.purchase({ id: product.sku, value: finalValue });
+    ttkEvents.purchase({ id: product.sku, value: finalValue });
+    setDone(true);
+  };
+
   const submitPayment = async () => {
+    fbEvents.addPaymentInfo();
+    ttkEvents.addPaymentInfo();
     setLoading(true);
     setApiError('');
     try {
@@ -157,7 +170,7 @@ export default function CheckoutPage() {
       if (data.pix?.qrcodeImage && data.pix?.copyText) {
         setPixData({ qrcodeImage: data.pix.qrcodeImage, copyText: data.pix.copyText, transactionId: data.pix.transactionId });
       } else {
-        setDone(true);
+        handlePaymentSuccess(product.price);
       }
     } catch {
       setApiError('Erro de conexão. Tente novamente.');
@@ -188,7 +201,7 @@ export default function CheckoutPage() {
 
   // Tela PIX aguardando pagamento
   if (pixData) {
-    return <PixScreen pixData={pixData} pixPrice={pixPrice} onPaid={() => setDone(true)} />;
+    return <PixScreen pixData={pixData} pixPrice={pixPrice} onPaid={() => handlePaymentSuccess(pixPrice)} />;
   }
 
   if (done) {

@@ -258,6 +258,8 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
     if (typeof window !== 'undefined') {
       localStorage.setItem('cart', JSON.stringify([cartItem]));
     }
+    fbEvents.addToCart({ id: cartItem.sku || '', name: cartItem.title, value: selectedKit.price });
+    ttkEvents.addToCart({ id: cartItem.sku || '', name: cartItem.title, value: selectedKit.price });
     router.push('/checkout');
   };
 
@@ -265,6 +267,8 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
     if (typeof window !== 'undefined') {
       localStorage.setItem('cart', JSON.stringify([cartItem]));
     }
+    fbEvents.addToCart({ id: cartItem.sku || '', name: cartItem.title, value: selectedKit.price });
+    ttkEvents.addToCart({ id: cartItem.sku || '', name: cartItem.title, value: selectedKit.price });
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2000);
   };
