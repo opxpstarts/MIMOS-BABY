@@ -1013,10 +1013,12 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
           </h3>
           <div className="grid grid-cols-2 gap-2">
             {[
-              { path: "M5 13l4 4L19 7", label: "Frete Grátis", sub: "Todo Brasil" },
+              { path: "M5 13l4 4L19 7", label: "Frete Grátis", sub: "Todo o Brasil" },
               { path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", label: "Entrega Rápida", sub: "2-4 dias úteis" },
-              { path: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z", label: "Compra Segura", sub: "100% protegida" },
-              { path: "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15", label: "Troca Grátis", sub: "30 dias" },
+              { path: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z", label: "Compra Segura", sub: "SSL + Antifraude" },
+              { path: "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15", label: "Troca Grátis", sub: "30 dias garantidos" },
+              { path: "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z", label: "Pague do jeito que quiser", sub: "Cartão, PIX ou Boleto" },
+              { path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4", label: "Empresa Registrada", sub: "CNPJ 46.281.061/0001-75" },
             ].map(({ path, label, sub }) => (
               <div key={label} className="flex items-center gap-2 bg-orange-50 rounded-lg p-2">
                 <div className="w-9 h-9 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
@@ -1031,6 +1033,37 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
               </div>
             ))}
           </div>
+
+          {/* Métodos de pagamento */}
+          <div className="mt-4 pt-3 border-t border-orange-100">
+            <p className="text-[10px] text-gray-400 text-center mb-2 uppercase tracking-wider">Formas de pagamento aceitas</p>
+            <div className="flex items-center justify-center gap-2 flex-wrap">
+              {/* Visa */}
+              <div className="bg-white border border-gray-200 rounded px-2 py-1 shadow-sm">
+                <svg viewBox="0 0 38 24" className="h-5 w-8" aria-label="Visa">
+                  <rect width="38" height="24" rx="3" fill="#1A1F71"/>
+                  <text x="6" y="17" fill="white" fontSize="13" fontWeight="bold" fontFamily="Arial">VISA</text>
+                </svg>
+              </div>
+              {/* Mastercard */}
+              <div className="bg-white border border-gray-200 rounded px-1.5 py-1 shadow-sm flex items-center gap-0.5">
+                <div className="w-4 h-4 rounded-full bg-red-500 opacity-90"/>
+                <div className="w-4 h-4 rounded-full bg-yellow-400 opacity-90 -ml-2"/>
+              </div>
+              {/* PIX */}
+              <div className="bg-white border border-gray-200 rounded px-2 py-1 shadow-sm">
+                <span className="text-[10px] font-bold text-teal-600">PIX</span>
+              </div>
+              {/* Boleto */}
+              <div className="bg-white border border-gray-200 rounded px-2 py-1 shadow-sm">
+                <span className="text-[10px] font-bold text-gray-700">Boleto</span>
+              </div>
+              {/* Elo */}
+              <div className="bg-white border border-gray-200 rounded px-2 py-1 shadow-sm">
+                <span className="text-[10px] font-bold text-blue-700">ELO</span>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Espaçamento para o footer */}
@@ -1039,31 +1072,55 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
 
       {/* Footer */}
       <footer className="bg-gradient-to-r from-orange-500 to-orange-600 text-white py-8">
-        <div className="max-w-7xl mx-auto px-4">
+        <div className="max-w-2xl mx-auto px-4">
           {/* Logo */}
-          <div className="text-center mb-4">
-            <img src={logoUrl} alt="Logo" className="h-24 object-contain mx-auto mb-3" />
+          <div className="text-center mb-5">
+            <img src={logoUrl} alt="Logo" className="h-20 object-contain mx-auto mb-3" />
           </div>
 
-          {/* CNPJ e Endereço */}
-          <div className="text-center mb-4">
-            <p className="text-sm mb-1">CNPJ: 48.244.208/0001-82</p>
-            <p className="text-xs">
-              Rua Marina Frutuoso, 695, sala 02 - Centro, Jaraguá do Sul / SC
-            </p>
+          {/* Selos de confiança */}
+          <div className="flex justify-center gap-3 flex-wrap mb-5">
+            <div className="flex items-center gap-1.5 bg-white/15 rounded-lg px-3 py-1.5">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              <span className="text-xs font-semibold">Site Seguro SSL</span>
+            </div>
+            <div className="flex items-center gap-1.5 bg-white/15 rounded-lg px-3 py-1.5">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              <span className="text-xs font-semibold">Compra Protegida</span>
+            </div>
+            <div className="flex items-center gap-1.5 bg-white/15 rounded-lg px-3 py-1.5">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span className="text-xs font-semibold">Troca Grátis 30 dias</span>
+            </div>
           </div>
 
-          {/* Copyright */}
-          <div className="text-center mb-6 pb-6 border-b border-orange-400">
-            <p className="text-xs font-semibold">
-              © Peach Up 2026 – Todos os direitos reservados.
-            </p>
+          {/* Links de políticas */}
+          <div className="flex justify-center gap-5 mb-5 text-xs">
+            <a href="/politica-de-privacidade" className="underline underline-offset-2 opacity-90 hover:opacity-100">
+              Política de Privacidade
+            </a>
+            <a href="/politica-de-trocas-e-devolucoes" className="underline underline-offset-2 opacity-90 hover:opacity-100">
+              Trocas e Devoluções
+            </a>
           </div>
 
-          {/* Texto Legal */}
+          {/* CNPJ */}
+          <div className="text-center mb-5 pb-5 border-b border-orange-400/60">
+            <p className="text-xs opacity-80">CNPJ: 46.281.061/0001-75</p>
+            <p className="text-xs opacity-70 mt-0.5">Mimas Kids – Moda Infantil</p>
+          </div>
+
+          {/* Copyright + texto legal */}
           <div className="text-center">
-            <p className="text-[10px] leading-relaxed max-w-4xl mx-auto">
-              É vedada qualquer reprodução total ou parcial sem autorização. Em caso de divergências entre preços promocionais e valores enviados por e-mail, prevalece o valor presente no site. Valores e condições podem mudar sem aviso prévio. As imagens dos produtos são meramente ilustrativas.
+            <p className="text-xs font-semibold mb-2">© Mimas Kids 2026 – Todos os direitos reservados.</p>
+            <p className="text-[10px] leading-relaxed max-w-xl mx-auto opacity-70">
+              É vedada qualquer reprodução total ou parcial sem autorização. Valores e condições podem mudar sem aviso prévio. As imagens dos produtos são meramente ilustrativas.
             </p>
           </div>
         </div>
