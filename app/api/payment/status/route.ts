@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { sendPurchaseCAPI } from '@/lib/capi';
+import { pendingPurchases } from '@/lib/pending-purchases';
 
 const PRIMECASH_URL = 'https://api.primecashbrasil.com/v1/transactions';
 
@@ -21,6 +23,21 @@ export async function GET(req: NextRequest) {
 
     if (!response.ok) {
       return NextResponse.json({ error: 'Erro ao consultar pagamento.' }, { status: response.status });
+    }
+
+    // PIX confirmado como pago — dispara CAPI uma única vez
+    if (data.status === 'paid') {
+      const pending = pendingPurchases.get(id);
+      if (pending) {
+        pendingPurchases.delete(id); // remove antes de disparar para evitar disparo duplo
+        sendPurchaseCAPI({
+          eventId: id,
+          value: pending.value,
+          contentId: pending.contentId,
+          customer: pending.customer,
+          sourceUrl: pending.sourceUrl,
+        }).catch(e => console.error('[CAPI] Erro PIX pago:', e));
+      }
     }
 
     return NextResponse.json({ status: data.status });

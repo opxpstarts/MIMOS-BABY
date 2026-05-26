@@ -7,11 +7,12 @@ type ContentParams = {
 type PurchaseParams = {
   id: string;
   value: number;
+  eventId?: string; // para deduplicação com a CAPI
 };
 
-function fire(event: string, params?: Record<string, unknown>) {
+function fire(event: string, params?: Record<string, unknown>, options?: Record<string, string>) {
   if (typeof window !== 'undefined' && (window as any).fbq) {
-    (window as any).fbq('track', event, params);
+    (window as any).fbq('track', event, params, options);
   }
 }
 
@@ -28,6 +29,10 @@ export const fbEvents = {
   addPaymentInfo: () =>
     fire('AddPaymentInfo'),
 
-  purchase: ({ id, value }: PurchaseParams) =>
-    fire('Purchase', { content_ids: [id], value, currency: 'BRL' }),
+  purchase: ({ id, value, eventId }: PurchaseParams) =>
+    fire(
+      'Purchase',
+      { content_ids: [id], value, currency: 'BRL' },
+      eventId ? { eventID: eventId } : undefined,
+    ),
 };

@@ -116,8 +116,8 @@ export default function CheckoutPage() {
     return Object.keys(e).length === 0;
   };
 
-  const handlePaymentSuccess = (finalValue: number) => {
-    fbEvents.purchase({ id: product.sku, value: finalValue });
+  const handlePaymentSuccess = (finalValue: number, eventId?: string) => {
+    fbEvents.purchase({ id: product.sku, value: finalValue, eventId });
     ttkEvents.purchase({ id: product.sku, value: finalValue });
     setDone(true);
   };
@@ -135,6 +135,7 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           amount: Math.round(product.price * (form.pagamento === 'pix' ? 0.95 : 1) * 100),
           paymentMethod: form.pagamento === 'cartao' ? 'credit_card' : 'pix',
+          sku: product.sku,
           customer: {
             name: form.nome,
             email: form.email,
@@ -170,7 +171,8 @@ export default function CheckoutPage() {
       if (data.pix?.qrcodeImage && data.pix?.copyText) {
         setPixData({ qrcodeImage: data.pix.qrcodeImage, copyText: data.pix.copyText, transactionId: data.pix.transactionId });
       } else {
-        handlePaymentSuccess(product.price);
+        // Para cartão, usa transactionId retornado pelo servidor para deduplicação com CAPI
+        handlePaymentSuccess(product.price, data.transactionId ? String(data.transactionId) : undefined);
       }
     } catch {
       setApiError('Erro de conexão. Tente novamente.');
@@ -201,7 +203,7 @@ export default function CheckoutPage() {
 
   // Tela PIX aguardando pagamento
   if (pixData) {
-    return <PixScreen pixData={pixData} pixPrice={pixPrice} onPaid={() => handlePaymentSuccess(pixPrice)} />;
+    return <PixScreen pixData={pixData} pixPrice={pixPrice} onPaid={() => handlePaymentSuccess(pixPrice, String(pixData.transactionId))} />;
   }
 
   if (done) {

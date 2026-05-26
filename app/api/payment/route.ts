@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import QRCode from 'qrcode';
+import { sendPurchaseCAPI } from '@/lib/capi';
+import { pendingPurchases } from '@/lib/pending-purchases';
 
 const PRIMECASH_URL = 'https://api.primecashbrasil.com/v1/transactions';
 const MAX_RETRIES = 3;
@@ -36,7 +38,6 @@ async function createTransaction(payload: Record<string, unknown>) {
 
     if (!response.ok) {
       const errMsg = parseError(data);
-      // erro intermitente do adquirente — tenta de novo
       if (attempt < MAX_RETRIES && errMsg.toLowerCase().includes('adquirente')) {
         await sleep(RETRY_DELAY_MS);
         continue;
@@ -44,7 +45,6 @@ async function createTransaction(payload: Record<string, unknown>) {
       return { ok: false, error: errMsg, data: null };
     }
 
-    // PIX gerado mas sem QR code — tenta de novo
     if (payload.paymentMethod === 'pix' && !data?.pix?.qrcode) {
       if (attempt < MAX_RETRIES) {
         await sleep(RETRY_DELAY_MS);
@@ -61,7 +61,16 @@ async function createTransaction(payload: Record<string, unknown>) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { paymentMethod, customer, card, installments, amount, items } = body;
+    const { paymentMethod, customer, card, installments, amount, items, sku } = body;
+
+    const clientIp =
+      req.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
+      req.headers.get('x-real-ip') ||
+      '';
+    const userAgent = req.headers.get('user-agent') || '';
+    const sourceUrl = req.headers.get('referer') || 'https://mimusbaby.shop/checkout';
+    const contentId = sku || 'kit-mimas-kids';
+    const valueInBRL = amount / 100;
 
     const payload: Record<string, unknown> = {
       amount,
@@ -87,7 +96,7 @@ export async function POST(req: NextRequest) {
       },
       items: items ?? [
         {
-          title: '2 Meia-Calça Forrada Térmica Translúcida · Lã Peluciada',
+          title: 'Kit Moletom Infantil Menina Inverno',
           quantity: 1,
           unitPrice: amount,
           tangible: true,
@@ -111,13 +120,45 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error }, { status: 502 });
     }
 
+    const capiCustomer = {
+      email: customer.email,
+      phone: customer.phone,
+      name: customer.name,
+      city: customer.city,
+      state: customer.state,
+      zipCode: customer.zipCode,
+      clientIp,
+      userAgent,
+    };
+
     if (paymentMethod === 'pix') {
+      const transactionId = String(data.id);
       const pixText = data.pix.qrcode as string;
       const qrcodeImage = await QRCode.toDataURL(pixText, { width: 256, margin: 2 });
-      return NextResponse.json({ pix: { qrcodeImage, copyText: pixText, transactionId: data.id } });
+
+      // Salva dados do cliente para disparar CAPI quando PIX for pago
+      pendingPurchases.set(transactionId, {
+        customer: capiCustomer,
+        value: valueInBRL * 0.95, // desconto PIX de 5%
+        contentId,
+        sourceUrl,
+      });
+
+      return NextResponse.json({
+        pix: { qrcodeImage, copyText: pixText, transactionId: data.id },
+      });
     }
 
-    return NextResponse.json(data);
+    // Cartão aprovado — dispara CAPI imediatamente no servidor
+    sendPurchaseCAPI({
+      eventId: String(data.id),
+      value: valueInBRL,
+      contentId,
+      customer: capiCustomer,
+      sourceUrl,
+    }).catch(e => console.error('[CAPI] Erro cartão:', e));
+
+    return NextResponse.json({ ...data, transactionId: data.id });
   } catch {
     return NextResponse.json({ error: 'Erro interno do servidor.' }, { status: 500 });
   }
