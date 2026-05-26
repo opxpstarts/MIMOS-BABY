@@ -1071,58 +1071,119 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gradient-to-r from-orange-500 to-orange-600 text-white py-8">
-        <div className="max-w-2xl mx-auto px-4">
-          {/* Logo */}
-          <div className="text-center mb-5">
-            <img src={logoUrl} alt="Logo" className="h-20 object-contain mx-auto mb-3" />
+      <footer className="bg-gradient-to-b from-orange-500 to-orange-700 text-white">
+
+        {/* Bloco principal */}
+        <div className="max-w-2xl mx-auto px-5 pt-10 pb-6">
+
+          {/* Logo + tagline */}
+          <div className="text-center mb-7">
+            <img src={logoUrl} alt="Mimas Kids" className="h-32 object-contain mx-auto drop-shadow-md" />
+            <p className="text-sm font-medium opacity-90 mt-2 tracking-wide">Moda Infantil com Carinho ✨</p>
           </div>
 
           {/* Selos de confiança */}
-          <div className="flex justify-center gap-3 flex-wrap mb-5">
-            <div className="flex items-center gap-1.5 bg-white/15 rounded-lg px-3 py-1.5">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-              <span className="text-xs font-semibold">Site Seguro SSL</span>
+          <div className="grid grid-cols-3 gap-2 mb-7">
+            {[
+              { icon: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z", label: "Site Seguro", sub: "SSL 256-bit" },
+              { icon: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z", label: "Compra 100%", sub: "Protegida" },
+              { icon: "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15", label: "Troca Grátis", sub: "Em até 30 dias" },
+            ].map(({ icon, label, sub }) => (
+              <div key={label} className="flex flex-col items-center gap-1.5 bg-white/10 rounded-xl px-2 py-3 border border-white/10">
+                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={icon} />
+                  </svg>
+                </div>
+                <p className="text-[11px] font-bold leading-tight text-center">{label}</p>
+                <p className="text-[10px] opacity-75 leading-tight text-center">{sub}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Links + Atendimento lado a lado */}
+          <div className="grid grid-cols-2 gap-4 mb-7 text-sm">
+            <div>
+              <p className="text-[10px] uppercase tracking-widest font-bold opacity-60 mb-3">Informações</p>
+              <ul className="space-y-2">
+                <li>
+                  <a href="/politica-de-privacidade" className="flex items-center gap-1.5 opacity-85 hover:opacity-100 transition-opacity">
+                    <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span className="text-xs">Política de Privacidade</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="/politica-de-trocas-e-devolucoes" className="flex items-center gap-1.5 opacity-85 hover:opacity-100 transition-opacity">
+                    <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    <span className="text-xs">Trocas e Devoluções</span>
+                  </a>
+                </li>
+              </ul>
             </div>
-            <div className="flex items-center gap-1.5 bg-white/15 rounded-lg px-3 py-1.5">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-              <span className="text-xs font-semibold">Compra Protegida</span>
-            </div>
-            <div className="flex items-center gap-1.5 bg-white/15 rounded-lg px-3 py-1.5">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              <span className="text-xs font-semibold">Troca Grátis 30 dias</span>
+            <div>
+              <p className="text-[10px] uppercase tracking-widest font-bold opacity-60 mb-3">Atendimento</p>
+              <ul className="space-y-2">
+                <li className="flex items-center gap-1.5 opacity-85">
+                  <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  <span className="text-xs">contato@mimusbaby.shop</span>
+                </li>
+                <li className="flex items-center gap-1.5 opacity-85">
+                  <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="text-xs">Seg–Sex, 9h às 18h</span>
+                </li>
+              </ul>
             </div>
           </div>
 
-          {/* Links de políticas */}
-          <div className="flex justify-center gap-5 mb-5 text-xs">
-            <a href="/politica-de-privacidade" className="underline underline-offset-2 opacity-90 hover:opacity-100">
-              Política de Privacidade
-            </a>
-            <a href="/politica-de-trocas-e-devolucoes" className="underline underline-offset-2 opacity-90 hover:opacity-100">
-              Trocas e Devoluções
-            </a>
+          {/* Formas de pagamento */}
+          <div className="mb-7">
+            <p className="text-[10px] uppercase tracking-widest font-bold opacity-60 mb-3 text-center">Formas de pagamento</p>
+            <div className="flex items-center justify-center gap-2 flex-wrap">
+              <div className="bg-white rounded-md px-2.5 py-1.5 shadow-sm">
+                <svg viewBox="0 0 38 24" className="h-4 w-7" aria-label="Visa">
+                  <rect width="38" height="24" rx="3" fill="#1A1F71"/>
+                  <text x="5" y="17" fill="white" fontSize="13" fontWeight="bold" fontFamily="Arial">VISA</text>
+                </svg>
+              </div>
+              <div className="bg-white rounded-md px-2 py-1.5 shadow-sm flex items-center">
+                <div className="w-5 h-5 rounded-full bg-red-500"/>
+                <div className="w-5 h-5 rounded-full bg-yellow-400 -ml-2.5"/>
+              </div>
+              <div className="bg-white rounded-md px-2.5 py-1.5 shadow-sm">
+                <span className="text-[11px] font-bold text-teal-600 tracking-tight">PIX</span>
+              </div>
+              <div className="bg-white rounded-md px-2.5 py-1.5 shadow-sm">
+                <span className="text-[11px] font-bold text-gray-700">Boleto</span>
+              </div>
+              <div className="bg-white rounded-md px-2.5 py-1.5 shadow-sm">
+                <span className="text-[11px] font-bold text-blue-700">ELO</span>
+              </div>
+              <div className="bg-white rounded-md px-2.5 py-1.5 shadow-sm">
+                <span className="text-[11px] font-bold text-gray-600">Hiper</span>
+              </div>
+            </div>
           </div>
 
-          {/* CNPJ */}
-          <div className="text-center mb-5 pb-5 border-b border-orange-400/60">
-            <p className="text-xs opacity-80">CNPJ: 46.281.061/0001-75</p>
-            <p className="text-xs opacity-70 mt-0.5">Mimas Kids – Moda Infantil</p>
-          </div>
+          {/* Divisor */}
+          <div className="border-t border-white/20 mb-5" />
 
-          {/* Copyright + texto legal */}
-          <div className="text-center">
-            <p className="text-xs font-semibold mb-2">© Mimas Kids 2026 – Todos os direitos reservados.</p>
-            <p className="text-[10px] leading-relaxed max-w-xl mx-auto opacity-70">
-              É vedada qualquer reprodução total ou parcial sem autorização. Valores e condições podem mudar sem aviso prévio. As imagens dos produtos são meramente ilustrativas.
+          {/* CNPJ + Copyright */}
+          <div className="text-center space-y-1.5">
+            <p className="text-xs font-semibold opacity-90">© Mimas Kids 2026 – Todos os direitos reservados.</p>
+            <p className="text-[11px] opacity-70">CNPJ: 46.281.061/0001-75 · Mimas Kids – Moda Infantil</p>
+            <p className="text-[10px] leading-relaxed opacity-55 max-w-sm mx-auto pt-1">
+              Valores e condições podem mudar sem aviso prévio. As imagens dos produtos são meramente ilustrativas.
             </p>
           </div>
+
         </div>
       </footer>
       {/* Navbar fixa de compra */}
