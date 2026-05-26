@@ -18,6 +18,7 @@ export async function GET(req: NextRequest) {
     });
 
     const json = await response.json();
+    console.log(`[status] BuyPix raw response para ${id}:`, JSON.stringify(json));
 
     if (!response.ok) {
       return NextResponse.json({ error: 'Erro ao consultar pagamento.' }, { status: response.status });
@@ -25,9 +26,9 @@ export async function GET(req: NextRequest) {
 
     const depositData = json.data ?? json;
     const rawStatus: string = depositData.status ?? '';
-
-    // depix_sent = PIX confirmado/pago
     const isPaid = rawStatus === 'depix_sent';
+
+    console.log(`[status] id=${id} rawStatus=${rawStatus} isPaid=${isPaid}`);
 
     if (isPaid) {
       const pending = pendingPurchases.get(id);
@@ -40,11 +41,14 @@ export async function GET(req: NextRequest) {
           customer: pending.customer,
           sourceUrl: pending.sourceUrl,
         }).catch(e => console.error('[CAPI] Erro PIX pago:', e));
+      } else {
+        console.log(`[status] CAPI já disparada ou sem dados para id=${id}`);
       }
     }
 
     return NextResponse.json({ status: isPaid ? 'paid' : rawStatus });
-  } catch {
+  } catch (e) {
+    console.error('[status] Erro interno:', e);
     return NextResponse.json({ error: 'Erro interno.' }, { status: 500 });
   }
 }
