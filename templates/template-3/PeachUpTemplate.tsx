@@ -684,9 +684,6 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
               <p className="text-sm text-gray-700 mt-4 mb-3">
                 ✨ Mais praticidade para o dia a dia e muito mais estilo para sua pequena!
               </p>
-              <p className="text-sm text-gray-700 mb-2">
-                <span className="font-bold">🚚 Envio rápido em até 24 horas</span>
-              </p>
               <p className="text-sm text-gray-700">
                 📏 Consulte a tabela de medidas nas imagens ou na guia de tamanho
               </p>
