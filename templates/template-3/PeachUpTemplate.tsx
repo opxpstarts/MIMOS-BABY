@@ -1012,7 +1012,7 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
 
       {/* Footer */}
       <footer className="bg-gradient-to-b from-orange-500 to-orange-700 text-white">
-        <div className="max-w-2xl mx-auto px-4 pt-6 pb-4">
+        <div className="max-w-2xl mx-auto px-4 pt-6 pb-24">
 
           {/* Logo + tagline */}
           <div className="text-center mb-4">
