@@ -56,146 +56,170 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
       name: "Carla Souza",
       date: "04/05/2026",
       rating: 5,
-      comment: "Demorei para avaliar pois queria saber como ficaria depois da lavagem e digo está perfeito não solta tinta não encolheu, comprei tamanho 3 para minha filha de 2 anos ficou um pouquinho folgado, porém no comprimento ficou ótimo."
+      comment: "Demorei para avaliar pois queria saber como ficaria depois da lavagem e digo está perfeito não solta tinta não encolheu, comprei tamanho 3 para minha filha de 2 anos ficou um pouquinho folgado, porém no comprimento ficou ótimo.",
+      photos: ['/images/Avaliacao01.webp'],
     },
     {
       name: "Jessica Silva",
       date: "11/05/2026",
       rating: 5,
-      comment: "Comprei o tamanho 6, minha filha tem 4 anos e o tamanho ficou ótimo. São boas pelo preço que paguei e muito bonitas as blusas. Tecido flanelado fino, mas confortável."
+      comment: "Comprei o tamanho 6, minha filha tem 4 anos e o tamanho ficou ótimo. São boas pelo preço que paguei e muito bonitas as blusas. Tecido flanelado fino, mas confortável.",
+      photos: ['/images/Avaliacao02.webp.webp', '/images/Avaliacao02.1.webp.webp'],
     },
     {
       name: "Luiza Fernandes",
       date: "29/04/2026",
       rating: 5,
-      comment: "Minha bebê tem 11 meses mais tem peso e altura de uma bebê de mais de 1 ano, pedi o tamanho 2 e ficou um pouco grande mais até gostei pq não perde rápido e a qualidade do produto é ótima com certeza comprarei novamente."
+      comment: "Minha bebê tem 11 meses mais tem peso e altura de uma bebê de mais de 1 ano, pedi o tamanho 2 e ficou um pouco grande mais até gostei pq não perde rápido e a qualidade do produto é ótima com certeza comprarei novamente.",
+      photos: ['/images/Avaliacao03.webp.webp'],
     },
     {
       name: "Luisa",
       date: "02/05/2026",
       rating: 5,
-      comment: "Cores lindas, tamanho ótimo, amei as estampas !!!"
+      comment: "Cores lindas, tamanho ótimo, amei as estampas !!!",
+      photos: ['/images/Avaliacao04.webp.webp', '/images/Avaliacao04.1.webp.webp'],
     },
     {
       name: "Mariana Costa",
       date: "15/01/2026",
       rating: 5,
-      comment: "Produto de excelente qualidade! Minha filha amou as estampas e o tecido é muito macio. Recomendo demais!"
+      comment: "Produto de excelente qualidade! Minha filha amou as estampas e o tecido é muito macio. Recomendo demais!",
+      photos: ['/images/Avaliacao05.webp.webp.webp', '/images/Avaliacao05.1.webp.webp'],
     },
     {
       name: "Fernanda Oliveira",
       date: "22/01/2026",
       rating: 4,
-      comment: "Muito bom! O tecido é quentinho e confortável. Comprei tamanho 4 e ficou perfeito. Única observação é que demorou um pouco para chegar."
+      comment: "Muito bom! O tecido é quentinho e confortável. Comprei tamanho 4 e ficou perfeito. Única observação é que demorou um pouco para chegar.",
+      photos: ['/images/Avaliacao06.webp.webp', '/images/Avaliacao06.1webp.webp'],
     },
     {
       name: "Patricia Santos",
       date: "05/02/2026",
       rating: 5,
-      comment: "Simplesmente perfeito! A qualidade superou minhas expectativas. Já é a segunda vez que compro e sempre chega certinho."
+      comment: "Simplesmente perfeito! A qualidade superou minhas expectativas. Já é a segunda vez que compro e sempre chega certinho.",
+      photos: ['/images/Avaliacao07.webp.webp.webp', '/images/Avaliacao07.1.webp.webp.webp'],
     },
     {
       name: "Amanda Lima",
       date: "12/02/2026",
       rating: 5,
-      comment: "Amei! As cores são vibrantes e não desbotam. Minha pequena adora usar, super confortável para brincar."
+      comment: "Amei! As cores são vibrantes e não desbotam. Minha pequena adora usar, super confortável para brincar.",
+      photos: ['/images/Avaliacao08.webp.webp.webp', '/images/Avaliacao08.1.webp.webp.webp'],
     },
     {
       name: "Juliana Rodrigues",
       date: "18/02/2026",
       rating: 5,
-      comment: "Excelente custo benefício! Kit completo com estampas lindas. O tamanho 2 ficou perfeito na minha bebê de 1 ano e meio."
+      comment: "Excelente custo benefício! Kit completo com estampas lindas. O tamanho 2 ficou perfeito na minha bebê de 1 ano e meio.",
+      photos: ['/images/Avaliacao09.webp.webp.webp', '/images/Avaliacao09.1.webp.webp.webp'],
     },
     {
       name: "Camila Alves",
       date: "25/02/2026",
       rating: 4,
-      comment: "Produto bom, tecido de qualidade. Comprei tamanho 6 e veio um pouco grande, mas nada que atrapalhe. Recomendo!"
+      comment: "Produto bom, tecido de qualidade. Comprei tamanho 6 e veio um pouco grande, mas nada que atrapalhe. Recomendo!",
+      photos: ['/images/Avaliacao10.1.webp1.webp.webp.webp.webp', '/images/Avaliacao10.1.webp2.webp'],
     },
     {
       name: "Renata Martins",
       date: "03/03/2026",
       rating: 5,
-      comment: "Maravilhoso! Chegou super rápido e bem embalado. As estampas são ainda mais bonitas pessoalmente. Minha filha não quer tirar!"
+      comment: "Maravilhoso! Chegou super rápido e bem embalado. As estampas são ainda mais bonitas pessoalmente. Minha filha não quer tirar!",
+      photos: ['/images/Avaliacao11.webp.webp.webp.webp.webp', '/images/Avaliacao11.1.webp.webp.webp.webp.webp.webp'],
     },
     {
       name: "Beatriz Pereira",
       date: "10/03/2026",
       rating: 5,
-      comment: "Qualidade impecável! Já lavei várias vezes e continua como novo. O tecido é grossinho e quentinho, perfeito para o inverno."
+      comment: "Qualidade impecável! Já lavei várias vezes e continua como novo. O tecido é grossinho e quentinho, perfeito para o inverno.",
+      photos: ['/images/Avaliacao12.1.webp.webp.webp.webp.webp'],
     },
     {
       name: "Gabriela Souza",
       date: "17/03/2026",
       rating: 5,
-      comment: "Simplesmente apaixonada! Comprei para minha sobrinha e ela amou. As cores são lindas e o tecido é muito bom."
+      comment: "Simplesmente apaixonada! Comprei para minha sobrinha e ela amou. As cores são lindas e o tecido é muito bom.",
+      photos: ['/images/Avaliacao13.webp.webp.webp.webp.webp', '/images/Avaliacao13.1.webp.webp.webp.webp.webp.webp'],
     },
     {
       name: "Roberta Dias",
       date: "24/03/2026",
       rating: 4,
-      comment: "Muito bom! O único detalhe é que achei o tamanho 8 um pouco justo, mas a qualidade é ótima."
+      comment: "Muito bom! O único detalhe é que achei o tamanho 8 um pouco justo, mas a qualidade é ótima.",
+      photos: ['/images/Avaliacao14.webp.webp.webp.webp.webp.webp'],
     },
     {
       name: "Daniela Ferreira",
       date: "31/03/2026",
       rating: 5,
-      comment: "Perfeito! Comprei 2 kits e todos vieram lindos. Tecido de qualidade, costuras bem feitas. Super recomendo!"
+      comment: "Perfeito! Comprei 2 kits e todos vieram lindos. Tecido de qualidade, costuras bem feitas. Super recomendo!",
+      photos: ['/images/Avaliacao15.webp.webp.webp.webp.webp.webp'],
     },
     {
       name: "Vanessa Ribeiro",
       date: "07/04/2026",
       rating: 5,
-      comment: "Adorei! Minha filha tem 3 anos e o tamanho 4 ficou ótimo. O tecido é macio e quentinho. Já quero comprar mais!"
+      comment: "Adorei! Minha filha tem 3 anos e o tamanho 4 ficou ótimo. O tecido é macio e quentinho. Já quero comprar mais!",
+      photos: ['/images/Avaliacao16.webp.webp.webp.webp.webp.webp', '/images/Avaliacao16.1.webp.webp.webp.webp.webp.webp.webp'],
     },
     {
       name: "Tatiana Gomes",
       date: "14/04/2026",
       rating: 5,
-      comment: "Excelente! Chegou antes do prazo e a qualidade é surpreendente. As estampas são fofas demais!"
+      comment: "Excelente! Chegou antes do prazo e a qualidade é surpreendente. As estampas são fofas demais!",
+      photos: ['/images/Avaliacao17.webp.webp.webp.webp.webp.webp.webp', '/images/Avaliacao17.1webp.webp.webp.webp.webp.webp.webp.webp'],
     },
     {
       name: "Priscila Carvalho",
       date: "21/04/2026",
       rating: 5,
-      comment: "Muito satisfeita com a compra! O tecido é de ótima qualidade e não encolheu na lavagem. Voltarei a comprar com certeza!"
+      comment: "Muito satisfeita com a compra! O tecido é de ótima qualidade e não encolheu na lavagem. Voltarei a comprar com certeza!",
+      photos: ['/images/Avaliacao18.webp.webp.webp.webp.webp.webp.webp.webp', '/images/Avaliacao18.1webp.webp'],
     },
     {
       name: "Larissa Moreira",
       date: "28/04/2026",
       rating: 4,
-      comment: "Bom produto! As estampas são lindas e o tecido é confortável. Comprei tamanho 3 e ficou um pouco folgado, mas está ótimo."
+      comment: "Bom produto! As estampas são lindas e o tecido é confortável. Comprei tamanho 3 e ficou um pouco folgado, mas está ótimo.",
+      photos: ['/images/Avaliacao19.webp.webp'],
     },
     {
       name: "Aline Barbosa",
       date: "05/05/2026",
       rating: 5,
-      comment: "Perfeito! Minha filha adorou as estampas. O tecido é quentinho e muito confortável. Entrega rápida!"
+      comment: "Perfeito! Minha filha adorou as estampas. O tecido é quentinho e muito confortável. Entrega rápida!",
+      photos: ['/images/Avaliacao20.webp'],
     },
     {
       name: "Cristina Azevedo",
       date: "12/05/2026",
       rating: 5,
-      comment: "Maravilhoso! Já é a terceira vez que compro. A qualidade é sempre a mesma, excelente! Super indico!"
+      comment: "Maravilhoso! Já é a terceira vez que compro. A qualidade é sempre a mesma, excelente! Super indico!",
+      photos: ['/images/Avaliacao21.webp.webp'],
     },
     {
       name: "Simone Teixeira",
       date: "19/05/2026",
       rating: 5,
-      comment: "Amei demais! O kit veio completo, bem embalado e as peças são lindas. Minha pequena está um amor com essas roupinhas!"
+      comment: "Amei demais! O kit veio completo, bem embalado e as peças são lindas. Minha pequena está um amor com essas roupinhas!",
+      photos: ['/images/Avaliacao22.webp.webp'],
     },
     {
       name: "Elaine Monteiro",
       date: "23/05/2026",
       rating: 5,
-      comment: "Produto excelente! Tecido de primeira qualidade, costuras perfeitas. Comprei tamanho 6 e ficou perfeito na minha filha de 4 anos."
+      comment: "Produto excelente! Tecido de primeira qualidade, costuras perfeitas. Comprei tamanho 6 e ficou perfeito na minha filha de 4 anos.",
+      photos: ['/images/Avaliacao23.webp'],
     },
     {
       name: "Mônica Araújo",
       date: "24/05/2026",
       rating: 5,
-      comment: "Simplesmente perfeito! As cores são vibrantes, o tecido é macio e quentinho. Minha filha está linda e confortável. Recomendo muito!"
-    }
+      comment: "Simplesmente perfeito! As cores são vibrantes, o tecido é macio e quentinho. Minha filha está linda e confortável. Recomendo muito!",
+      photos: ['/images/Avaliacao24webp.webp'],
+    },
   ];
 
   const showMoreReviews = () => {
@@ -425,7 +449,7 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
               className={`w-full flex items-center justify-between px-4 py-3 bg-white border-2 rounded-xl transition-all ${sizeSheetOpen ? 'border-orange-500' : 'border-gray-200 hover:border-orange-400'}`}
             >
               <span className={`text-sm font-semibold ${selectedSize ? 'text-gray-900' : 'text-gray-400'}`}>
-                {selectedSize ? `Tamanho: ${selectedSize}` : 'Selecione o tamanho'}
+                {selectedSize ? `Idade: ${selectedSize}` : 'Selecione a idade'}
               </span>
               <svg className={`w-4 h-4 text-gray-400 transition-transform ${sizeSheetOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -434,7 +458,7 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
 
             {sizeSheetOpen && (
               <div className="absolute left-0 right-0 z-20 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
-                {['Tam 1', 'Tam 2', 'Tam 3', 'Tam 4', 'Tam 6', 'Tam 8', 'Tam 10'].map((size, i, arr) => (
+                {['2-3 anos', '3-4 anos', '5-6 anos', '7-8 anos', '9-10 anos'].map((size, i, arr) => (
                   <button
                     key={size}
                     onClick={() => { setSelectedSize(size); setSizeSheetOpen(false); }}
@@ -664,7 +688,7 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
               </p>
               <div className="mt-4 rounded-lg overflow-hidden">
                 <img
-                  src="/images/Foto.Descriçao.jpeg"
+                  src="/images/tabela de tamanho.png"
                   alt="Tabela de medidas"
                   className="w-full h-auto object-cover"
                 />
@@ -911,6 +935,18 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
                   </div>
                 </div>
                 <p className="text-sm text-gray-700 leading-relaxed">{review.comment}</p>
+                {review.photos && review.photos.length > 0 && (
+                  <div className="flex gap-2 mt-3 overflow-x-auto pb-1">
+                    {review.photos.map((photo, pIdx) => (
+                      <img
+                        key={pIdx}
+                        src={photo}
+                        alt={`Foto da avaliação`}
+                        className="flex-shrink-0 w-28 h-28 rounded-lg object-cover"
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>
