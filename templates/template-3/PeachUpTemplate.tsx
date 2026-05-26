@@ -1011,59 +1011,6 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
           <h3 className="text-xs font-bold text-orange-500 mb-3 text-center uppercase tracking-widest">
             ✓ Por que comprar conosco?
           </h3>
-          <div className="grid grid-cols-2 gap-2">
-            {[
-              { path: "M5 13l4 4L19 7", label: "Frete Grátis", sub: "Todo o Brasil" },
-              { path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", label: "Entrega Rápida", sub: "2-4 dias úteis" },
-              { path: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z", label: "Compra Segura", sub: "SSL + Antifraude" },
-              { path: "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15", label: "Troca Grátis", sub: "30 dias garantidos" },
-              { path: "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z", label: "Pague do jeito que quiser", sub: "Cartão, PIX ou Boleto" },
-              { path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4", label: "Empresa Registrada", sub: "CNPJ 46.281.061/0001-75" },
-            ].map(({ path, label, sub }) => (
-              <div key={label} className="flex items-center gap-2 bg-orange-50 rounded-lg p-2">
-                <div className="w-9 h-9 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={path} />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-gray-900 leading-tight">{label}</p>
-                  <p className="text-[10px] text-gray-500">{sub}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Métodos de pagamento */}
-          <div className="mt-4 pt-3 border-t border-orange-100">
-            <p className="text-[10px] text-gray-400 text-center mb-2 uppercase tracking-wider">Formas de pagamento aceitas</p>
-            <div className="flex items-center justify-center gap-2 flex-wrap">
-              {/* Visa */}
-              <div className="bg-white border border-gray-200 rounded px-2 py-1 shadow-sm">
-                <svg viewBox="0 0 38 24" className="h-5 w-8" aria-label="Visa">
-                  <rect width="38" height="24" rx="3" fill="#1A1F71"/>
-                  <text x="6" y="17" fill="white" fontSize="13" fontWeight="bold" fontFamily="Arial">VISA</text>
-                </svg>
-              </div>
-              {/* Mastercard */}
-              <div className="bg-white border border-gray-200 rounded px-1.5 py-1 shadow-sm flex items-center gap-0.5">
-                <div className="w-4 h-4 rounded-full bg-red-500 opacity-90"/>
-                <div className="w-4 h-4 rounded-full bg-yellow-400 opacity-90 -ml-2"/>
-              </div>
-              {/* PIX */}
-              <div className="bg-white border border-gray-200 rounded px-2 py-1 shadow-sm">
-                <span className="text-[10px] font-bold text-teal-600">PIX</span>
-              </div>
-              {/* Boleto */}
-              <div className="bg-white border border-gray-200 rounded px-2 py-1 shadow-sm">
-                <span className="text-[10px] font-bold text-gray-700">Boleto</span>
-              </div>
-              {/* Elo */}
-              <div className="bg-white border border-gray-200 rounded px-2 py-1 shadow-sm">
-                <span className="text-[10px] font-bold text-blue-700">ELO</span>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Espaçamento para o footer */}
@@ -1082,24 +1029,6 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
             <p className="text-sm font-medium opacity-90 mt-2 tracking-wide">Moda Infantil com Carinho ✨</p>
           </div>
 
-          {/* Selos de confiança */}
-          <div className="grid grid-cols-3 gap-2 mb-7">
-            {[
-              { icon: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z", label: "Site Seguro", sub: "SSL 256-bit" },
-              { icon: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z", label: "Compra 100%", sub: "Protegida" },
-              { icon: "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15", label: "Troca Grátis", sub: "Em até 30 dias" },
-            ].map(({ icon, label, sub }) => (
-              <div key={label} className="flex flex-col items-center gap-1.5 bg-white/10 rounded-xl px-2 py-3 border border-white/10">
-                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={icon} />
-                  </svg>
-                </div>
-                <p className="text-[11px] font-bold leading-tight text-center">{label}</p>
-                <p className="text-[10px] opacity-75 leading-tight text-center">{sub}</p>
-              </div>
-            ))}
-          </div>
 
           {/* Links + Atendimento lado a lado */}
           <div className="grid grid-cols-2 gap-4 mb-7 text-sm">
