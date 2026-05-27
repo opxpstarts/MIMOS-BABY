@@ -285,10 +285,10 @@ export default function CheckoutPage() {
             <p className="text-white text-xs font-semibold opacity-90">Oferta especial ativa</p>
             <p className="text-white text-lg font-extrabold leading-tight">44% OFF + PIX 5% OFF</p>
           </div>
-          <div className="bg-white rounded-lg px-3 py-1.5 text-center">
-            <p className="text-[10px] text-gray-400 line-through leading-none">{formatPrice(ORIGINAL_PRICE)}</p>
-            <p className="text-orange-500 font-extrabold text-base leading-tight">{formatPrice(pixPrice)}</p>
-            <p className="text-[9px] text-green-600 font-bold">no PIX</p>
+          <div className="bg-white rounded-xl px-4 py-3 text-center min-w-[110px] shadow-sm">
+            <p className="text-[11px] text-gray-400 line-through leading-none mb-1">{formatPrice(ORIGINAL_PRICE)}</p>
+            <p className="text-orange-500 font-extrabold text-xl leading-none mb-2">{formatPrice(pixPrice)}</p>
+            <span className="inline-block bg-teal-500 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full tracking-wide">PIX</span>
           </div>
         </div>
 
