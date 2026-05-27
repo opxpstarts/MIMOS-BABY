@@ -25,6 +25,9 @@ const FALLBACK_PRODUCT: CartItem = {
   sku: 'BOOM-001',
 };
 
+// Preço "de" para mostrar -44% OFF (89,90 / 159,90 = 56,2% → desconto de 43,8% ≈ 44%)
+const ORIGINAL_PRICE = 159.90;
+
 const STEPS = ['Identificação', 'Entrega', 'Pagamento'];
 
 type FormData = {
@@ -50,7 +53,7 @@ type FormData = {
 const INITIAL: FormData = {
   nome: '', email: '', cpf: '', telefone: '',
   cep: '', rua: '', numero: '', complemento: '', bairro: '', cidade: '', estado: '',
-  pagamento: 'pix',
+  pagamento: 'pix', // único método disponível
   cartaoNumero: '', cartaoNome: '', cartaoValidade: '', cartaoCvv: '', parcelas: '1x',
 };
 
@@ -276,6 +279,19 @@ export default function CheckoutPage() {
 
       <div className="flex-1 overflow-y-auto">
       <div className="max-w-lg mx-auto px-4 py-4 pb-36">
+        {/* Banner de desconto */}
+        <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl px-4 py-3 mb-3 flex items-center justify-between shadow-md">
+          <div>
+            <p className="text-white text-xs font-semibold opacity-90">Oferta especial ativa</p>
+            <p className="text-white text-lg font-extrabold leading-tight">44% OFF + PIX 5% OFF</p>
+          </div>
+          <div className="bg-white rounded-lg px-3 py-1.5 text-center">
+            <p className="text-[10px] text-gray-400 line-through leading-none">{formatPrice(ORIGINAL_PRICE)}</p>
+            <p className="text-orange-500 font-extrabold text-base leading-tight">{formatPrice(pixPrice)}</p>
+            <p className="text-[9px] text-green-600 font-bold">no PIX</p>
+          </div>
+        </div>
+
         {/* Resumo do pedido */}
         <div className="bg-white rounded-xl border border-gray-200 p-4 mb-4">
           <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">Resumo do pedido</p>
@@ -285,21 +301,40 @@ export default function CheckoutPage() {
               <p className="text-xs font-bold text-gray-900 leading-tight">{product.title}</p>
               <p className="text-xs text-orange-500 font-semibold mt-0.5">{product.brand}</p>
               <p className="text-xs text-gray-400 mt-1">Qtd: {product.quantity}</p>
+              {/* Preço com desconto */}
+              <div className="flex items-center gap-2 mt-1.5">
+                <span className="text-[11px] text-gray-400 line-through">{formatPrice(ORIGINAL_PRICE)}</span>
+                <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">-44% OFF</span>
+              </div>
             </div>
-            <p className="text-sm font-bold text-gray-900 flex-shrink-0">{formatPrice(product.price)}</p>
+            <div className="text-right flex-shrink-0">
+              <p className="text-[11px] text-gray-400 line-through">{formatPrice(ORIGINAL_PRICE)}</p>
+              <p className="text-sm font-bold text-gray-900">{formatPrice(product.price)}</p>
+            </div>
           </div>
-          <div className="border-t border-gray-100 mt-3 pt-3 space-y-1">
+          <div className="border-t border-gray-100 mt-3 pt-3 space-y-1.5">
             <div className="flex justify-between text-xs text-gray-500">
               <span>Subtotal</span>
-              <span>{formatPrice(product.price)}</span>
+              <span className="line-through text-gray-400">{formatPrice(ORIGINAL_PRICE)}</span>
+            </div>
+            <div className="flex justify-between text-xs text-red-500 font-semibold">
+              <span>Desconto (44% OFF)</span>
+              <span>-{formatPrice(ORIGINAL_PRICE - product.price)}</span>
             </div>
             <div className="flex justify-between text-xs text-green-600 font-semibold">
               <span>Frete</span>
               <span>GRÁTIS</span>
             </div>
-            <div className="flex justify-between text-sm font-bold text-gray-900 pt-2 border-t border-gray-100">
-              <span>Total</span>
-              <span className="text-orange-500">{formatPrice(product.price)}</span>
+            <div className="flex justify-between text-xs text-green-600 font-semibold">
+              <span>Desconto PIX (5%)</span>
+              <span>-{formatPrice(product.price - pixPrice)}</span>
+            </div>
+            <div className="flex justify-between text-sm font-bold pt-2 border-t border-gray-100">
+              <span className="text-gray-900">Total no PIX</span>
+              <div className="text-right">
+                <p className="text-green-600 text-base font-extrabold">{formatPrice(pixPrice)}</p>
+                <p className="text-[10px] text-gray-400">Economia de {formatPrice(ORIGINAL_PRICE - pixPrice)}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -378,77 +413,48 @@ export default function CheckoutPage() {
         {/* Etapa 3 — Pagamento */}
         {step === 2 && (
           <div className="space-y-3">
-            {/* Seleção de método */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
               <h2 className="text-base font-bold text-gray-900 mb-4">Forma de pagamento</h2>
-              <div className="space-y-2">
-                {/* PIX */}
-                <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${form.pagamento === 'pix' ? 'border-orange-500 bg-orange-50' : 'border-gray-200'}`}>
-                  <input type="radio" name="pagamento" value="pix" checked={form.pagamento === 'pix'} onChange={() => set('pagamento', 'pix')} className="hidden" />
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${form.pagamento === 'pix' ? 'border-orange-500' : 'border-gray-300'}`}>
-                    {form.pagamento === 'pix' && <div className="w-2.5 h-2.5 rounded-full bg-orange-500" />}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-gray-900">PIX</span>
-                      <span className="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full">5% OFF</span>
+
+              {/* PIX — único método disponível */}
+              <div className="border-2 border-green-500 bg-green-50 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-full border-2 border-green-500 flex items-center justify-center">
+                      <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
                     </div>
-                    <p className="text-xs text-gray-500">À vista por <span className="font-bold text-green-600">{formatPrice(pixPrice)}</span></p>
+                    <span className="text-sm font-bold text-gray-900">PIX</span>
+                    <span className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">5% OFF</span>
                   </div>
                   <svg className="w-8 h-8 text-teal-500" viewBox="0 0 32 32" fill="currentColor">
                     <path d="M16 2C8.268 2 2 8.268 2 16s6.268 14 14 14 14-6.268 14-14S23.732 2 16 2zm-3.5 9.5l3.5 3.5 3.5-3.5 1.5 1.5L17 17l3.5 3.5-1.5 1.5L16 18.5l-3.5 3.5-1.5-1.5L14.5 17 11 13.5l1.5-1.5z"/>
                   </svg>
-                </label>
+                </div>
 
-                {/* Cartão */}
-                <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${form.pagamento === 'cartao' ? 'border-orange-500 bg-orange-50' : 'border-gray-200'}`}>
-                  <input type="radio" name="pagamento" value="cartao" checked={form.pagamento === 'cartao'} onChange={() => set('pagamento', 'cartao')} className="hidden" />
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${form.pagamento === 'cartao' ? 'border-orange-500' : 'border-gray-300'}`}>
-                    {form.pagamento === 'cartao' && <div className="w-2.5 h-2.5 rounded-full bg-orange-500" />}
+                {/* Destaque do valor */}
+                <div className="bg-white rounded-xl p-3 border border-green-200">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-gray-400">De <span className="line-through">{formatPrice(ORIGINAL_PRICE)}</span></p>
+                      <p className="text-xs text-gray-500 mt-0.5">Por apenas</p>
+                      <p className="text-2xl font-extrabold text-green-600 leading-tight">{formatPrice(pixPrice)}</p>
+                    </div>
+                    <div className="text-right">
+                      <div className="bg-red-500 text-white text-xs font-extrabold px-3 py-1.5 rounded-lg mb-1">
+                        -44% OFF
+                      </div>
+                      <p className="text-[10px] text-green-600 font-semibold">
+                        Economize {formatPrice(ORIGINAL_PRICE - pixPrice)}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <span className="text-sm font-bold text-gray-900">Cartão de crédito</span>
-                    <p className="text-xs text-gray-500">Até 6x de {formatPrice(product.price / 6)} sem juros</p>
-                  </div>
-                  <svg className="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                  </svg>
-                </label>
+                </div>
 
+                <p className="text-[11px] text-green-700 font-medium mt-2 text-center">
+                  ✓ Pagamento instantâneo e seguro · QR Code gerado na próxima tela
+                </p>
               </div>
             </div>
-
-            {/* Campos do cartão */}
-            {form.pagamento === 'cartao' && (
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
-                <h3 className="text-sm font-bold text-gray-900">Dados do cartão</h3>
-                <Field label="Número do cartão" error={errors.cartaoNumero}>
-                  <input value={form.cartaoNumero} onChange={e => set('cartaoNumero', mask(e.target.value, '#### #### #### ####'))} placeholder="0000 0000 0000 0000" className={input(errors.cartaoNumero)} maxLength={19} />
-                </Field>
-                <Field label="Nome no cartão" error={errors.cartaoNome}>
-                  <input value={form.cartaoNome} onChange={e => set('cartaoNome', e.target.value.toUpperCase())} placeholder="JOÃO DA SILVA" className={input(errors.cartaoNome)} />
-                </Field>
-                <div className="grid grid-cols-2 gap-3">
-                  <Field label="Validade" error={errors.cartaoValidade}>
-                    <input value={form.cartaoValidade} onChange={e => set('cartaoValidade', mask(e.target.value, '##/##'))} placeholder="MM/AA" className={input(errors.cartaoValidade)} maxLength={5} />
-                  </Field>
-                  <Field label="CVV" error={errors.cartaoCvv}>
-                    <input value={form.cartaoCvv} onChange={e => set('cartaoCvv', e.target.value.replace(/\D/g, ''))} placeholder="123" className={input(errors.cartaoCvv)} maxLength={4} />
-                  </Field>
-                </div>
-                <Field label="Parcelas">
-                  <select value={form.parcelas} onChange={e => set('parcelas', e.target.value)} className={input()}>
-                    {[1,2,3,4,5,6].map(n => (
-                      <option key={n} value={`${n}x`}>
-                        {n}x de {formatPrice(product.price / n)} {n === 1 ? '(à vista)' : 'sem juros'}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-              </div>
-            )}
-
-
           </div>
         )}
 
