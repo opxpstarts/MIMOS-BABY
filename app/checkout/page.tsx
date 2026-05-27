@@ -291,18 +291,21 @@ export default function CheckoutPage() {
           const ss = String(timeLeft % 60).padStart(2, '0');
           const urgent = timeLeft <= 60;
           return (
-            <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl px-4 py-2.5 mb-3 flex items-center justify-between shadow-md">
-              <div className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-white/80 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl px-4 py-3 mb-3 flex items-center justify-center gap-3 shadow-md">
+              {/* Ícone de relógio com fundo */}
+              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <p className="text-white text-xs font-semibold">
-                  {timeLeft > 0 ? 'Desconto expira em' : 'Último momento!'}
-                </p>
               </div>
-              <p className={`font-extrabold text-base tabular-nums ${urgent ? 'text-yellow-300' : 'text-white'}`}>
-                {mm}:{ss}
+              {/* Frase */}
+              <p className="text-white text-xs font-semibold">
+                {timeLeft > 0 ? 'Desconto expira em' : 'Oferta encerrada!'}
               </p>
+              {/* Timer com fundo */}
+              <div className={`px-3 py-1 rounded-lg font-extrabold text-sm tabular-nums ${urgent ? 'bg-yellow-400 text-orange-700' : 'bg-white/20 text-white'}`}>
+                {mm}:{ss}
+              </div>
             </div>
           );
         })()}
