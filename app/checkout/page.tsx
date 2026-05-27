@@ -291,29 +291,18 @@ export default function CheckoutPage() {
           const ss = String(timeLeft % 60).padStart(2, '0');
           const urgent = timeLeft <= 60;
           return (
-            <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl px-4 py-3 mb-3 flex items-center justify-between shadow-md">
-              {/* Lado esquerdo: relógio + CTA */}
-              <div className="flex items-center gap-2.5">
-                <svg className="w-5 h-5 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl px-4 py-2.5 mb-3 flex items-center justify-between shadow-md">
+              <div className="flex items-center gap-2">
+                <svg className="w-4 h-4 text-white/80 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <div>
-                  <p className="text-white/80 text-[10px] font-medium leading-none mb-0.5">
-                    {timeLeft > 0 ? 'Desconto expira em' : 'Último momento!'}
-                  </p>
-                  <p className={`font-extrabold text-xl leading-none tabular-nums ${urgent ? 'text-yellow-300' : 'text-white'}`}>
-                    {mm}:{ss}
-                  </p>
-                </div>
+                <p className="text-white text-xs font-semibold">
+                  {timeLeft > 0 ? 'Desconto expira em' : 'Último momento!'}
+                </p>
               </div>
-              {/* Lado direito: preços */}
-              <div className="text-right">
-                <div className="flex items-center gap-1.5 justify-end mb-0.5">
-                  <span className="bg-white/25 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">-44% OFF</span>
-                  <span className="text-white/60 text-xs line-through">{formatPrice(ORIGINAL_PRICE)}</span>
-                </div>
-                <p className="text-white font-extrabold text-base leading-none">{formatPrice(pixPrice)}</p>
-              </div>
+              <p className={`font-extrabold text-base tabular-nums ${urgent ? 'text-yellow-300' : 'text-white'}`}>
+                {mm}:{ss}
+              </p>
             </div>
           );
         })()}
