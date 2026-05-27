@@ -292,10 +292,6 @@ export default function CheckoutPage() {
           const urgent = timeLeft <= 60;
           return (
             <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl px-4 py-3 mb-3 flex items-center justify-center gap-3 shadow-md">
-              {/* Timer com fundo */}
-              <div className={`px-3 py-1 rounded-lg font-extrabold text-sm tabular-nums ${urgent ? 'bg-yellow-400 text-orange-700' : 'bg-white/20 text-white'}`}>
-                {mm}:{ss}
-              </div>
               {/* Ícone de relógio com fundo */}
               <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                 <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -306,6 +302,10 @@ export default function CheckoutPage() {
               <p className="text-white text-xs font-semibold">
                 {timeLeft > 0 ? 'Desconto expira em' : 'Oferta encerrada!'}
               </p>
+              {/* Timer com fundo */}
+              <div className={`px-3 py-1 rounded-lg font-extrabold text-sm tabular-nums ${urgent ? 'bg-yellow-400 text-orange-700' : 'bg-white/20 text-white'}`}>
+                {mm}:{ss}
+              </div>
             </div>
           );
         })()}
