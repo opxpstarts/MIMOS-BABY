@@ -279,16 +279,15 @@ export default function CheckoutPage() {
 
       <div className="flex-1 overflow-y-auto">
       <div className="max-w-lg mx-auto px-4 py-4 pb-36">
-        {/* Banner de desconto */}
-        <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl px-4 py-3 mb-3 flex items-center justify-between shadow-md">
-          <div>
-            <p className="text-white text-xs font-semibold opacity-90">Oferta especial ativa</p>
-            <p className="text-white text-lg font-extrabold leading-tight">44% OFF + PIX 5% OFF</p>
+        {/* Banner de desconto — linha única */}
+        <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl px-4 py-2.5 mb-3 flex items-center justify-between shadow-md">
+          <div className="flex items-center gap-2">
+            <span className="bg-white/20 text-white text-[11px] font-bold px-2 py-0.5 rounded-full">-44% OFF</span>
+            <span className="text-white/80 text-[11px]">+ PIX 5% OFF</span>
           </div>
-          <div className="bg-white rounded-xl px-4 py-3 text-center min-w-[110px] shadow-sm">
-            <p className="text-[11px] text-gray-400 line-through leading-none mb-1">{formatPrice(ORIGINAL_PRICE)}</p>
-            <p className="text-orange-500 font-extrabold text-xl leading-none mb-2">{formatPrice(pixPrice)}</p>
-            <span className="inline-block bg-teal-500 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full tracking-wide">PIX</span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-white/70 text-xs line-through">{formatPrice(ORIGINAL_PRICE)}</span>
+            <span className="text-white font-extrabold text-sm">{formatPrice(pixPrice)}</span>
           </div>
         </div>
 
@@ -301,26 +300,14 @@ export default function CheckoutPage() {
               <p className="text-xs font-bold text-gray-900 leading-tight">{product.title}</p>
               <p className="text-xs text-orange-500 font-semibold mt-0.5">{product.brand}</p>
               <p className="text-xs text-gray-400 mt-1">Qtd: {product.quantity}</p>
-              {/* Preço com desconto */}
-              <div className="flex items-center gap-2 mt-1.5">
-                <span className="text-[11px] text-gray-400 line-through">{formatPrice(ORIGINAL_PRICE)}</span>
-                <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">-44% OFF</span>
-              </div>
             </div>
             <div className="text-right flex-shrink-0">
               <p className="text-[11px] text-gray-400 line-through">{formatPrice(ORIGINAL_PRICE)}</p>
               <p className="text-sm font-bold text-gray-900">{formatPrice(product.price)}</p>
+              <span className="bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded mt-0.5 inline-block">-44% OFF</span>
             </div>
           </div>
           <div className="border-t border-gray-100 mt-3 pt-3 space-y-1.5">
-            <div className="flex justify-between text-xs text-gray-500">
-              <span>Subtotal</span>
-              <span className="line-through text-gray-400">{formatPrice(ORIGINAL_PRICE)}</span>
-            </div>
-            <div className="flex justify-between text-xs text-red-500 font-semibold">
-              <span>Desconto (44% OFF)</span>
-              <span>-{formatPrice(ORIGINAL_PRICE - product.price)}</span>
-            </div>
             <div className="flex justify-between text-xs text-green-600 font-semibold">
               <span>Frete</span>
               <span>GRÁTIS</span>
@@ -330,11 +317,8 @@ export default function CheckoutPage() {
               <span>-{formatPrice(product.price - pixPrice)}</span>
             </div>
             <div className="flex justify-between text-sm font-bold pt-2 border-t border-gray-100">
-              <span className="text-gray-900">Total no PIX</span>
-              <div className="text-right">
-                <p className="text-green-600 text-base font-extrabold">{formatPrice(pixPrice)}</p>
-                <p className="text-[10px] text-gray-400">Economia de {formatPrice(ORIGINAL_PRICE - pixPrice)}</p>
-              </div>
+              <span className="text-gray-900">Total</span>
+              <span className="text-green-600 text-base font-extrabold">{formatPrice(pixPrice)}</span>
             </div>
           </div>
         </div>
