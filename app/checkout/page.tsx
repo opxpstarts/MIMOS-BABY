@@ -87,6 +87,12 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState('');
   const [pixData, setPixData] = useState<{ qrcodeImage: string; copyText: string; transactionId: number } | null>(null);
+  const [timeLeft, setTimeLeft] = useState(360);
+
+  useEffect(() => {
+    const t = setInterval(() => setTimeLeft(s => s > 0 ? s - 1 : 0), 1000);
+    return () => clearInterval(t);
+  }, []);
 
   const set = (field: keyof FormData, value: string) => {
     setForm(f => ({ ...f, [field]: value }));
@@ -279,17 +285,38 @@ export default function CheckoutPage() {
 
       <div className="flex-1 overflow-y-auto">
       <div className="max-w-lg mx-auto px-4 py-4 pb-36">
-        {/* Banner de desconto — linha única */}
-        <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl px-4 py-2.5 mb-3 flex items-center justify-between shadow-md">
-          <div className="flex items-center gap-2">
-            <span className="bg-white/20 text-white text-[11px] font-bold px-2 py-0.5 rounded-full">-44% OFF</span>
-            <span className="text-white/80 text-[11px]">+ PIX 5% OFF</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-white/70 text-xs line-through">{formatPrice(ORIGINAL_PRICE)}</span>
-            <span className="text-white font-extrabold text-sm">{formatPrice(pixPrice)}</span>
-          </div>
-        </div>
+        {/* Banner de desconto com timer */}
+        {(() => {
+          const mm = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+          const ss = String(timeLeft % 60).padStart(2, '0');
+          const urgent = timeLeft <= 60;
+          return (
+            <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl px-4 py-3 mb-3 flex items-center justify-between shadow-md">
+              {/* Lado esquerdo: relógio + CTA */}
+              <div className="flex items-center gap-2.5">
+                <svg className="w-5 h-5 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                  <p className="text-white/80 text-[10px] font-medium leading-none mb-0.5">
+                    {timeLeft > 0 ? 'Desconto expira em' : 'Último momento!'}
+                  </p>
+                  <p className={`font-extrabold text-xl leading-none tabular-nums ${urgent ? 'text-yellow-300' : 'text-white'}`}>
+                    {mm}:{ss}
+                  </p>
+                </div>
+              </div>
+              {/* Lado direito: preços */}
+              <div className="text-right">
+                <div className="flex items-center gap-1.5 justify-end mb-0.5">
+                  <span className="bg-white/25 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">-44% OFF</span>
+                  <span className="text-white/60 text-xs line-through">{formatPrice(ORIGINAL_PRICE)}</span>
+                </div>
+                <p className="text-white font-extrabold text-base leading-none">{formatPrice(pixPrice)}</p>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Resumo do pedido */}
         <div className="bg-white rounded-xl border border-gray-200 p-4 mb-4">
