@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendPurchaseCAPI } from '@/lib/capi';
 import { pendingPurchases } from '@/lib/pending-purchases';
-import { sendPosVendaEvent } from '@/lib/pos-venda';
 
 const BUYPIX_URL = 'https://buypix.me/api/v1';
 
@@ -42,13 +41,6 @@ export async function GET(req: NextRequest) {
           customer: pending.customer,
           sourceUrl: pending.sourceUrl,
         }).catch(e => console.error('[CAPI] Erro PIX pago:', e));
-        if (pending.posVendaCustomer) {
-          sendPosVendaEvent('order.paid', pending.posVendaCustomer, {
-            id,
-            status: 'paid',
-            amount_cents: Math.round(pending.value * 100),
-          }).catch(e => console.error('[PosVenda] Erro order.paid status:', e));
-        }
       } else {
         console.log(`[status] CAPI já disparada ou sem dados para id=${id}`);
       }

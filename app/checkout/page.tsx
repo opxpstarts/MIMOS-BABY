@@ -17,7 +17,7 @@ type CartItem = {
 };
 
 const FALLBACK_PRODUCT: CartItem = {
-  title: 'Kit 05 Peças',
+  title: 'Kit 10 Peças Moletom Infantil Menina Inverno Confeccionados em Algodão Macio',
   brand: 'Mimus Kids',
   price: 89.90,
   image: '/images/Foto01.webp',
@@ -86,7 +86,6 @@ export default function CheckoutPage() {
     const cart: CartItem[] = JSON.parse(localStorage.getItem('cart') || '[]');
     const item = cart.length > 0 ? cart[0] : FALLBACK_PRODUCT;
     if (cart.length > 0) setProduct(cart[0]);
-    setFbCookies({ fbc: getCookie('_fbc'), fbp: getCookie('_fbp') });
     fbEvents.initiateCheckout({ value: item.price });
     ttkEvents.initiateCheckout({ value: item.price });
   }, []);
@@ -153,8 +152,6 @@ export default function CheckoutPage() {
           amount: Math.round(product.price * (form.pagamento === 'pix' ? 0.95 : 1) * 100),
           paymentMethod: form.pagamento === 'cartao' ? 'credit_card' : 'pix',
           sku: product.sku,
-          fbc: fbCookies.fbc || undefined,
-          fbp: fbCookies.fbp || undefined,
           customer: {
             name: form.nome,
             email: form.email,
@@ -253,7 +250,7 @@ export default function CheckoutPage() {
       <div className="bg-white shadow-sm flex-shrink-0 z-30">
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
           <a href="/kit-10-peca-moletomin-fantil">
-            <img src="/images/logo.png" alt="Mimus Kids" className="h-20 object-contain" />
+            <img src="/images/Logo.png" alt="Mimus Kids" className="h-20 object-contain" />
           </a>
           <div className="flex items-center gap-1 text-xs text-gray-500">
             <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">

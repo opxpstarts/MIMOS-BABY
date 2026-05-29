@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendPurchaseCAPI } from '@/lib/capi';
 import { pendingPurchases } from '@/lib/pending-purchases';
-import { sendPosVendaEvent } from '@/lib/pos-venda';
 import fs from 'fs';
 import path from 'path';
 
@@ -65,16 +64,9 @@ export async function GET(req: NextRequest) {
             customer: pending.customer,
             sourceUrl: pending.sourceUrl,
           });
-          if (pending.posVendaCustomer) {
-            await sendPosVendaEvent('order.paid', pending.posVendaCustomer, {
-              id,
-              status: 'paid',
-              amount_cents: Math.round(pending.value * 100),
-            });
-          }
           paid++;
-          results.push(`${id}: CAPI + PosVenda disparadas`);
-          console.log(`[cron] CAPI + PosVenda disparadas para id=${id}`);
+          results.push(`${id}: CAPI disparada`);
+          console.log(`[cron] CAPI disparada para id=${id}`);
         }
       } else {
         results.push(`${id}: ${rawStatus}`);

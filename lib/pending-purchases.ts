@@ -1,11 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 import type { CAPICustomer } from './capi';
-import type { PosVendaCustomer } from './pos-venda';
 
 export type PendingPurchase = {
   customer: CAPICustomer;
-  posVendaCustomer?: PosVendaCustomer;
   value: number;
   contentId: string;
   sourceUrl: string;

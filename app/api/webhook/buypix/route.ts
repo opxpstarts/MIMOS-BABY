@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendPurchaseCAPI } from '@/lib/capi';
 import { pendingPurchases } from '@/lib/pending-purchases';
-import { sendPosVendaEvent } from '@/lib/pos-venda';
 
 // Webhook recebido do BuyPix quando depósito é confirmado
 export async function POST(req: NextRequest) {
@@ -33,14 +32,7 @@ export async function POST(req: NextRequest) {
           customer: pending.customer,
           sourceUrl: pending.sourceUrl,
         });
-        if (pending.posVendaCustomer) {
-          await sendPosVendaEvent('order.paid', pending.posVendaCustomer, {
-            id,
-            status: 'paid',
-            amount_cents: Math.round(pending.value * 100),
-          });
-        }
-        console.log(`[Webhook BuyPix] CAPI + PosVenda disparadas para depósito ${id}`);
+        console.log(`[Webhook BuyPix] CAPI disparada para depósito ${id}`);
       } else {
         console.warn(`[Webhook BuyPix] Nenhum pendingPurchase para id=${id} (já processado ou expirado)`);
       }

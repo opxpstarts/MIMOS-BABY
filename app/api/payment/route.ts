@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
-import { sendPurchaseCAPI, sendCAPIEvent } from '@/lib/capi';
+import { sendPurchaseCAPI } from '@/lib/capi';
 import { pendingPurchases } from '@/lib/pending-purchases';
-import { sendPosVendaEvent } from '@/lib/pos-venda';
 
 const BUYPIX_URL = 'https://buypix.me/api/v1';
 const PRIMECASH_URL = 'https://api.primecashbrasil.com/v1/transactions';
@@ -84,7 +83,7 @@ async function createPixDeposit(amountBRL: number, clientIp: string, idempotency
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { paymentMethod, customer, card, installments, amount, sku, fbc, fbp } = body;
+    const { paymentMethod, customer, card, installments, amount, sku } = body;
 
     const clientIp =
       req.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
@@ -96,15 +95,12 @@ export async function POST(req: NextRequest) {
     const valueInBRL = amount / 100;
 
     const capiCustomer = {
-      email:      customer.email,
-      phone:      customer.phone,
-      name:       customer.name,
-      city:       customer.city,
-      state:      customer.state,
-      zipCode:    customer.zipCode,
-      externalId: customer.email, // email como external_id aumenta match rate
-      fbc:        fbc || undefined,
-      fbp:        fbp || undefined,
+      email:   customer.email,
+      phone:   customer.phone,
+      name:    customer.name,
+      city:    customer.city,
+      state:   customer.state,
+      zipCode: customer.zipCode,
       clientIp,
       userAgent,
     };
@@ -120,56 +116,17 @@ export async function POST(req: NextRequest) {
 
       const transactionId = String(data.id);
 
-      const posVendaCustomer = {
-        name:  customer.name,
-        email: customer.email,
-        phone: customer.phone,
-        cpf:   customer.cpf,
-        address: {
-          street:       customer.street,
-          number:       customer.streetNumber,
-          complement:   customer.complement,
-          neighborhood: customer.neighborhood,
-          city:         customer.city,
-          state:        customer.state,
-          zipcode:      String(customer.zipCode ?? '').replace(/\D/g, ''),
-          country:      'BR',
-        },
-      };
-
-      // Guarda dados para CAPI e pos-venda quando PIX for confirmado
+      // Guarda dados para CAPI quando PIX for confirmado
       pendingPurchases.set(transactionId, {
         customer: capiCustomer,
-        posVendaCustomer,
         value: valueInBRL,
         contentId,
         sourceUrl,
       });
 
-      // CAPI Purchase para PIX pendente — mesmo eventId usado pelo webhook ao confirmar
-      // Meta deduplica automaticamente se o mesmo eventId chegar duas vezes em 48h
-      sendCAPIEvent({
-        eventName: 'Purchase',
-        eventId:   transactionId,
-        value:     valueInBRL,
-        contentId,
-        customer:  capiCustomer,
-        sourceUrl,
-      }).catch(e => console.error('[CAPI] Erro PIX pendente:', e));
-
-      // Dispara evento pos-venda: PIX gerado (início do funil de recuperação)
-      sendPosVendaEvent('order.pix_generated', posVendaCustomer, {
-        id:            transactionId,
-        status:        'pix_generated',
-        amount_cents:  Math.round(valueInBRL * 100),
-        pix_qrcode:    data.pix_qr_code_base64 ?? null,
-        pix_copia_cola: data.pix_qr_code ?? null,
-        pix_expires_at: data.expires_at ?? null,
-      }).catch(e => console.error('[PosVenda] Erro pix_generated:', e));
-
       return NextResponse.json({
         pix: {
-          qrcodeImage: data.pix_qr_code_base64,
+          qrcodeImage: data.pix_qr_code_base64, // já é data URL base64
           copyText:    data.pix_qr_code,
           transactionId,
         },
