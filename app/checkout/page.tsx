@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react';
+import { fbEvents } from '@/lib/fbevents';
+import { ttkEvents } from '@/lib/ttkevents';
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(price);
@@ -15,13 +17,16 @@ type CartItem = {
 };
 
 const FALLBACK_PRODUCT: CartItem = {
-  title: 'Kit 10 Peças Moletom Infantil Menina Inverno Confeccionados em Algodão Macio',
-  brand: 'Mimas Kids',
+  title: 'Kit 05 Peças',
+  brand: 'Mimus Kids',
   price: 89.90,
   image: '/images/Foto01.webp',
   quantity: 1,
   sku: 'BOOM-001',
 };
+
+// Preço "de" para mostrar -44% OFF (89,90 / 159,90 = 56,2% → desconto de 43,8% ≈ 44%)
+const ORIGINAL_PRICE = 159.90;
 
 const STEPS = ['Identificação', 'Entrega', 'Pagamento'];
 
@@ -48,7 +53,7 @@ type FormData = {
 const INITIAL: FormData = {
   nome: '', email: '', cpf: '', telefone: '',
   cep: '', rua: '', numero: '', complemento: '', bairro: '', cidade: '', estado: '',
-  pagamento: 'pix',
+  pagamento: 'pix', // único método disponível
   cartaoNumero: '', cartaoNome: '', cartaoValidade: '', cartaoCvv: '', parcelas: '1x',
 };
 
@@ -65,20 +70,37 @@ function mask(value: string, pattern: string) {
   return result;
 }
 
+function getCookie(name: string): string {
+  if (typeof document === 'undefined') return '';
+  const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : '';
+}
+
 export default function CheckoutPage() {
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<FormData>(INITIAL);
   const [product, setProduct] = useState<CartItem>(FALLBACK_PRODUCT);
+  const [fbCookies, setFbCookies] = useState({ fbc: '', fbp: '' });
 
   useEffect(() => {
     const cart: CartItem[] = JSON.parse(localStorage.getItem('cart') || '[]');
+    const item = cart.length > 0 ? cart[0] : FALLBACK_PRODUCT;
     if (cart.length > 0) setProduct(cart[0]);
+    setFbCookies({ fbc: getCookie('_fbc'), fbp: getCookie('_fbp') });
+    fbEvents.initiateCheckout({ value: item.price });
+    ttkEvents.initiateCheckout({ value: item.price });
   }, []);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState('');
   const [pixData, setPixData] = useState<{ qrcodeImage: string; copyText: string; transactionId: number } | null>(null);
+  const [timeLeft, setTimeLeft] = useState(360);
+
+  useEffect(() => {
+    const t = setInterval(() => setTimeLeft(s => s > 0 ? s - 1 : 0), 1000);
+    return () => clearInterval(t);
+  }, []);
 
   const set = (field: keyof FormData, value: string) => {
     setForm(f => ({ ...f, [field]: value }));
@@ -111,7 +133,15 @@ export default function CheckoutPage() {
     return Object.keys(e).length === 0;
   };
 
+  const handlePaymentSuccess = (finalValue: number, eventId?: string) => {
+    fbEvents.purchase({ id: product.sku, value: finalValue, eventId });
+    ttkEvents.purchase({ id: product.sku, value: finalValue });
+    setDone(true);
+  };
+
   const submitPayment = async () => {
+    fbEvents.addPaymentInfo();
+    ttkEvents.addPaymentInfo();
     setLoading(true);
     setApiError('');
     try {
@@ -122,6 +152,9 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           amount: Math.round(product.price * (form.pagamento === 'pix' ? 0.95 : 1) * 100),
           paymentMethod: form.pagamento === 'cartao' ? 'credit_card' : 'pix',
+          sku: product.sku,
+          fbc: fbCookies.fbc || undefined,
+          fbp: fbCookies.fbp || undefined,
           customer: {
             name: form.nome,
             email: form.email,
@@ -157,7 +190,8 @@ export default function CheckoutPage() {
       if (data.pix?.qrcodeImage && data.pix?.copyText) {
         setPixData({ qrcodeImage: data.pix.qrcodeImage, copyText: data.pix.copyText, transactionId: data.pix.transactionId });
       } else {
-        setDone(true);
+        // Para cartão, usa transactionId retornado pelo servidor para deduplicação com CAPI
+        handlePaymentSuccess(product.price, data.transactionId ? String(data.transactionId) : undefined);
       }
     } catch {
       setApiError('Erro de conexão. Tente novamente.');
@@ -188,7 +222,7 @@ export default function CheckoutPage() {
 
   // Tela PIX aguardando pagamento
   if (pixData) {
-    return <PixScreen pixData={pixData} pixPrice={pixPrice} onPaid={() => setDone(true)} />;
+    return <PixScreen pixData={pixData} pixPrice={pixPrice} onPaid={() => handlePaymentSuccess(pixPrice, String(pixData.transactionId))} />;
   }
 
   if (done) {
@@ -219,7 +253,7 @@ export default function CheckoutPage() {
       <div className="bg-white shadow-sm flex-shrink-0 z-30">
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
           <a href="/kit-10-peca-moletomin-fantil">
-            <img src="/images/Logo.png" alt="Mimas Kids" className="h-20 object-contain" />
+            <img src="/images/logo.png" alt="Mimus Kids" className="h-20 object-contain" />
           </a>
           <div className="flex items-center gap-1 text-xs text-gray-500">
             <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
@@ -261,6 +295,31 @@ export default function CheckoutPage() {
 
       <div className="flex-1 overflow-y-auto">
       <div className="max-w-lg mx-auto px-4 py-4 pb-36">
+        {/* Banner de desconto com timer */}
+        {(() => {
+          const mm = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+          const ss = String(timeLeft % 60).padStart(2, '0');
+          const urgent = timeLeft <= 60;
+          return (
+            <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl px-4 py-3 mb-3 flex items-center justify-center gap-3 shadow-md">
+              {/* Ícone de relógio com fundo */}
+              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              {/* Frase */}
+              <p className="text-white text-xs font-semibold">
+                {timeLeft > 0 ? 'Desconto expira em' : 'Oferta encerrada!'}
+              </p>
+              {/* Timer com fundo */}
+              <div className={`px-3 py-1 rounded-lg font-extrabold text-sm tabular-nums ${urgent ? 'bg-yellow-400 text-orange-700' : 'bg-white/20 text-white'}`}>
+                {mm}:{ss}
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Resumo do pedido */}
         <div className="bg-white rounded-xl border border-gray-200 p-4 mb-4">
           <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">Resumo do pedido</p>
@@ -271,20 +330,24 @@ export default function CheckoutPage() {
               <p className="text-xs text-orange-500 font-semibold mt-0.5">{product.brand}</p>
               <p className="text-xs text-gray-400 mt-1">Qtd: {product.quantity}</p>
             </div>
-            <p className="text-sm font-bold text-gray-900 flex-shrink-0">{formatPrice(product.price)}</p>
-          </div>
-          <div className="border-t border-gray-100 mt-3 pt-3 space-y-1">
-            <div className="flex justify-between text-xs text-gray-500">
-              <span>Subtotal</span>
-              <span>{formatPrice(product.price)}</span>
+            <div className="text-right flex-shrink-0">
+              <p className="text-[11px] text-gray-400 line-through">{formatPrice(ORIGINAL_PRICE)}</p>
+              <p className="text-sm font-bold text-gray-900">{formatPrice(product.price)}</p>
+              <span className="bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded mt-0.5 inline-block">-44% OFF</span>
             </div>
+          </div>
+          <div className="border-t border-gray-100 mt-3 pt-3 space-y-1.5">
             <div className="flex justify-between text-xs text-green-600 font-semibold">
               <span>Frete</span>
               <span>GRÁTIS</span>
             </div>
-            <div className="flex justify-between text-sm font-bold text-gray-900 pt-2 border-t border-gray-100">
-              <span>Total</span>
-              <span className="text-orange-500">{formatPrice(product.price)}</span>
+            <div className="flex justify-between text-xs text-green-600 font-semibold">
+              <span>Desconto PIX (5%)</span>
+              <span>-{formatPrice(product.price - pixPrice)}</span>
+            </div>
+            <div className="flex justify-between text-sm font-bold pt-2 border-t border-gray-100">
+              <span className="text-gray-900">Total</span>
+              <span className="text-green-600 text-base font-extrabold">{formatPrice(pixPrice)}</span>
             </div>
           </div>
         </div>
@@ -363,77 +426,48 @@ export default function CheckoutPage() {
         {/* Etapa 3 — Pagamento */}
         {step === 2 && (
           <div className="space-y-3">
-            {/* Seleção de método */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
               <h2 className="text-base font-bold text-gray-900 mb-4">Forma de pagamento</h2>
-              <div className="space-y-2">
-                {/* PIX */}
-                <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${form.pagamento === 'pix' ? 'border-orange-500 bg-orange-50' : 'border-gray-200'}`}>
-                  <input type="radio" name="pagamento" value="pix" checked={form.pagamento === 'pix'} onChange={() => set('pagamento', 'pix')} className="hidden" />
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${form.pagamento === 'pix' ? 'border-orange-500' : 'border-gray-300'}`}>
-                    {form.pagamento === 'pix' && <div className="w-2.5 h-2.5 rounded-full bg-orange-500" />}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-gray-900">PIX</span>
-                      <span className="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full">5% OFF</span>
+
+              {/* PIX — único método disponível */}
+              <div className="border-2 border-green-500 bg-green-50 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-full border-2 border-green-500 flex items-center justify-center">
+                      <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
                     </div>
-                    <p className="text-xs text-gray-500">À vista por <span className="font-bold text-green-600">{formatPrice(pixPrice)}</span></p>
+                    <span className="text-sm font-bold text-gray-900">PIX</span>
+                    <span className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">5% OFF</span>
                   </div>
                   <svg className="w-8 h-8 text-teal-500" viewBox="0 0 32 32" fill="currentColor">
                     <path d="M16 2C8.268 2 2 8.268 2 16s6.268 14 14 14 14-6.268 14-14S23.732 2 16 2zm-3.5 9.5l3.5 3.5 3.5-3.5 1.5 1.5L17 17l3.5 3.5-1.5 1.5L16 18.5l-3.5 3.5-1.5-1.5L14.5 17 11 13.5l1.5-1.5z"/>
                   </svg>
-                </label>
+                </div>
 
-                {/* Cartão */}
-                <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${form.pagamento === 'cartao' ? 'border-orange-500 bg-orange-50' : 'border-gray-200'}`}>
-                  <input type="radio" name="pagamento" value="cartao" checked={form.pagamento === 'cartao'} onChange={() => set('pagamento', 'cartao')} className="hidden" />
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${form.pagamento === 'cartao' ? 'border-orange-500' : 'border-gray-300'}`}>
-                    {form.pagamento === 'cartao' && <div className="w-2.5 h-2.5 rounded-full bg-orange-500" />}
+                {/* Destaque do valor */}
+                <div className="bg-white rounded-xl p-3 border border-green-200">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-gray-400">De <span className="line-through">{formatPrice(ORIGINAL_PRICE)}</span></p>
+                      <p className="text-xs text-gray-500 mt-0.5">Por apenas</p>
+                      <p className="text-2xl font-extrabold text-green-600 leading-tight">{formatPrice(pixPrice)}</p>
+                    </div>
+                    <div className="text-right">
+                      <div className="bg-red-500 text-white text-xs font-extrabold px-3 py-1.5 rounded-lg mb-1">
+                        -44% OFF
+                      </div>
+                      <p className="text-[10px] text-green-600 font-semibold">
+                        Economize {formatPrice(ORIGINAL_PRICE - pixPrice)}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <span className="text-sm font-bold text-gray-900">Cartão de crédito</span>
-                    <p className="text-xs text-gray-500">Até 6x de {formatPrice(product.price / 6)} sem juros</p>
-                  </div>
-                  <svg className="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                  </svg>
-                </label>
+                </div>
 
+                <p className="text-[11px] text-green-700 font-medium mt-2 text-center">
+                  ✓ Pagamento instantâneo e seguro · QR Code gerado na próxima tela
+                </p>
               </div>
             </div>
-
-            {/* Campos do cartão */}
-            {form.pagamento === 'cartao' && (
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
-                <h3 className="text-sm font-bold text-gray-900">Dados do cartão</h3>
-                <Field label="Número do cartão" error={errors.cartaoNumero}>
-                  <input value={form.cartaoNumero} onChange={e => set('cartaoNumero', mask(e.target.value, '#### #### #### ####'))} placeholder="0000 0000 0000 0000" className={input(errors.cartaoNumero)} maxLength={19} />
-                </Field>
-                <Field label="Nome no cartão" error={errors.cartaoNome}>
-                  <input value={form.cartaoNome} onChange={e => set('cartaoNome', e.target.value.toUpperCase())} placeholder="JOÃO DA SILVA" className={input(errors.cartaoNome)} />
-                </Field>
-                <div className="grid grid-cols-2 gap-3">
-                  <Field label="Validade" error={errors.cartaoValidade}>
-                    <input value={form.cartaoValidade} onChange={e => set('cartaoValidade', mask(e.target.value, '##/##'))} placeholder="MM/AA" className={input(errors.cartaoValidade)} maxLength={5} />
-                  </Field>
-                  <Field label="CVV" error={errors.cartaoCvv}>
-                    <input value={form.cartaoCvv} onChange={e => set('cartaoCvv', e.target.value.replace(/\D/g, ''))} placeholder="123" className={input(errors.cartaoCvv)} maxLength={4} />
-                  </Field>
-                </div>
-                <Field label="Parcelas">
-                  <select value={form.parcelas} onChange={e => set('parcelas', e.target.value)} className={input()}>
-                    {[1,2,3,4,5,6].map(n => (
-                      <option key={n} value={`${n}x`}>
-                        {n}x de {formatPrice(product.price / n)} {n === 1 ? '(à vista)' : 'sem juros'}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-              </div>
-            )}
-
-
           </div>
         )}
 

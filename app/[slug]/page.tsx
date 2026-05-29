@@ -7,7 +7,7 @@ const getProduct = async (slug: string): Promise<DashboardProduct | null> => {
     slug,
     product: {
       title: "Kit 10 Peças Moletom Infantil Menina Inverno Confeccionados em Algodão Macio",
-      brand: "Mimas Kids",
+      brand: "Mimus Kids",
       price: 89.90,
       compareAtPrice: 159.90,
       discount: 44,
@@ -69,5 +69,5 @@ export default async function ProductPage({ params }: { params: { slug: string }
 
   if (!product) notFound();
 
-  return <Template3 product={product} logoUrl="/images/Logo.png" />;
+  return <Template3 product={product} logoUrl="/images/logo.png" />;
 }

@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import QRCode from 'qrcode';
+import { randomUUID } from 'crypto';
+import { sendPurchaseCAPI, sendCAPIEvent } from '@/lib/capi';
+import { pendingPurchases } from '@/lib/pending-purchases';
+import { sendPosVendaEvent } from '@/lib/pos-venda';
 
+const BUYPIX_URL = 'https://buypix.me/api/v1';
 const PRIMECASH_URL = 'https://api.primecashbrasil.com/v1/transactions';
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 1200;
 
-function getAuthHeader() {
+// ── PrimeCash (cartão de crédito) ─────────────────────────────────────────────
+
+function getPrimeCashAuthHeader() {
   const key = process.env.PRIMECASH_SECRET_KEY ?? '';
   return 'Basic ' + Buffer.from(`${key}:x`).toString('base64');
 }
@@ -21,13 +27,13 @@ function parseError(data: unknown): string {
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
-async function createTransaction(payload: Record<string, unknown>) {
+async function createCardTransaction(payload: Record<string, unknown>) {
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     const response = await fetch(PRIMECASH_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: getAuthHeader(),
+        Authorization: getPrimeCashAuthHeader(),
       },
       body: JSON.stringify(payload),
     });
@@ -36,7 +42,6 @@ async function createTransaction(payload: Record<string, unknown>) {
 
     if (!response.ok) {
       const errMsg = parseError(data);
-      // erro intermitente do adquirente — tenta de novo
       if (attempt < MAX_RETRIES && errMsg.toLowerCase().includes('adquirente')) {
         await sleep(RETRY_DELAY_MS);
         continue;
@@ -44,81 +49,190 @@ async function createTransaction(payload: Record<string, unknown>) {
       return { ok: false, error: errMsg, data: null };
     }
 
-    // PIX gerado mas sem QR code — tenta de novo
-    if (payload.paymentMethod === 'pix' && !data?.pix?.qrcode) {
-      if (attempt < MAX_RETRIES) {
-        await sleep(RETRY_DELAY_MS);
-        continue;
-      }
-      return { ok: false, error: 'PIX não gerado. Tente novamente.', data: null };
-    }
-
     return { ok: true, error: null, data };
   }
-  return { ok: false, error: 'Não foi possível gerar o PIX. Tente novamente.', data: null };
+  return { ok: false, error: 'Não foi possível processar. Tente novamente.', data: null };
 }
+
+// ── BuyPix (PIX) ──────────────────────────────────────────────────────────────
+
+async function createPixDeposit(amountBRL: number, clientIp: string, idempotencyKey: string) {
+  const body: Record<string, unknown> = { amount: amountBRL };
+  if (clientIp) body.payer_ip = clientIp;
+
+  const response = await fetch(`${BUYPIX_URL}/deposits`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.BUYPIX_API_KEY}`,
+      'Content-Type': 'application/json',
+      'X-Idempotency-Key': idempotencyKey,
+    },
+    body: JSON.stringify(body),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok || !data.success) {
+    return { ok: false, error: data.message || 'Erro ao gerar PIX.', data: null };
+  }
+
+  return { ok: true, error: null, data: data.data };
+}
+
+// ── Handler principal ─────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { paymentMethod, customer, card, installments, amount, items } = body;
+    const { paymentMethod, customer, card, installments, amount, sku, fbc, fbp } = body;
+
+    const clientIp =
+      req.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
+      req.headers.get('x-real-ip') ||
+      '';
+    const userAgent  = req.headers.get('user-agent') || '';
+    const sourceUrl  = req.headers.get('referer') || 'https://mimusbaby.shop/checkout';
+    const contentId  = sku || 'kit-mimas-kids';
+    const valueInBRL = amount / 100;
+
+    const capiCustomer = {
+      email:      customer.email,
+      phone:      customer.phone,
+      name:       customer.name,
+      city:       customer.city,
+      state:      customer.state,
+      zipCode:    customer.zipCode,
+      externalId: customer.email, // email como external_id aumenta match rate
+      fbc:        fbc || undefined,
+      fbp:        fbp || undefined,
+      clientIp,
+      userAgent,
+    };
+
+    // ── PIX via BuyPix ──────────────────────────────────────────────────────
+    if (paymentMethod === 'pix') {
+      const idempotencyKey = randomUUID();
+      const { ok, error, data } = await createPixDeposit(valueInBRL, clientIp, idempotencyKey);
+
+      if (!ok || !data) {
+        return NextResponse.json({ error }, { status: 502 });
+      }
+
+      const transactionId = String(data.id);
+
+      const posVendaCustomer = {
+        name:  customer.name,
+        email: customer.email,
+        phone: customer.phone,
+        cpf:   customer.cpf,
+        address: {
+          street:       customer.street,
+          number:       customer.streetNumber,
+          complement:   customer.complement,
+          neighborhood: customer.neighborhood,
+          city:         customer.city,
+          state:        customer.state,
+          zipcode:      String(customer.zipCode ?? '').replace(/\D/g, ''),
+          country:      'BR',
+        },
+      };
+
+      // Guarda dados para CAPI e pos-venda quando PIX for confirmado
+      pendingPurchases.set(transactionId, {
+        customer: capiCustomer,
+        posVendaCustomer,
+        value: valueInBRL,
+        contentId,
+        sourceUrl,
+      });
+
+      // CAPI Purchase para PIX pendente — mesmo eventId usado pelo webhook ao confirmar
+      // Meta deduplica automaticamente se o mesmo eventId chegar duas vezes em 48h
+      sendCAPIEvent({
+        eventName: 'Purchase',
+        eventId:   transactionId,
+        value:     valueInBRL,
+        contentId,
+        customer:  capiCustomer,
+        sourceUrl,
+      }).catch(e => console.error('[CAPI] Erro PIX pendente:', e));
+
+      // Dispara evento pos-venda: PIX gerado (início do funil de recuperação)
+      sendPosVendaEvent('order.pix_generated', posVendaCustomer, {
+        id:            transactionId,
+        status:        'pix_generated',
+        amount_cents:  Math.round(valueInBRL * 100),
+        pix_qrcode:    data.pix_qr_code_base64 ?? null,
+        pix_copia_cola: data.pix_qr_code ?? null,
+        pix_expires_at: data.expires_at ?? null,
+      }).catch(e => console.error('[PosVenda] Erro pix_generated:', e));
+
+      return NextResponse.json({
+        pix: {
+          qrcodeImage: data.pix_qr_code_base64,
+          copyText:    data.pix_qr_code,
+          transactionId,
+        },
+      });
+    }
+
+    // ── Cartão via PrimeCash ────────────────────────────────────────────────
+    const installmentsNum = parseInt(String(installments).replace('x', '')) || 1;
 
     const payload: Record<string, unknown> = {
       amount,
-      paymentMethod,
+      paymentMethod: 'credit_card',
       customer: {
-        name: customer.name,
-        email: customer.email,
-        phone: customer.phone.replace(/\D/g, ''),
-        document: {
-          type: 'cpf',
-          number: customer.cpf.replace(/\D/g, ''),
-        },
+        name:     customer.name,
+        email:    customer.email,
+        phone:    customer.phone.replace(/\D/g, ''),
+        document: { type: 'cpf', number: customer.cpf.replace(/\D/g, '') },
         address: {
-          street: customer.street,
+          street:       customer.street,
           streetNumber: customer.streetNumber,
-          complement: customer.complement || '',
-          zipCode: customer.zipCode.replace(/\D/g, ''),
+          complement:   customer.complement || '',
+          zipCode:      customer.zipCode.replace(/\D/g, ''),
           neighborhood: customer.neighborhood,
-          city: customer.city,
-          state: customer.state,
-          country: 'BR',
+          city:         customer.city,
+          state:        customer.state,
+          country:      'BR',
         },
       },
-      items: items ?? [
+      installments: installmentsNum,
+      card: {
+        number:         card.number.replace(/\s/g, ''),
+        holderName:     card.holderName,
+        expirationDate: card.expirationDate,
+        cvv:            card.cvv,
+      },
+      items: [
         {
-          title: '2 Meia-Calça Forrada Térmica Translúcida · Lã Peluciada',
-          quantity: 1,
+          title:     'Kit Moletom Infantil Menina Inverno',
+          quantity:  1,
           unitPrice: amount,
-          tangible: true,
+          tangible:  true,
         },
       ],
     };
 
-    if (paymentMethod === 'credit_card') {
-      payload.installments = installments;
-      payload.card = {
-        number: card.number.replace(/\s/g, ''),
-        holderName: card.holderName,
-        expirationDate: card.expirationDate,
-        cvv: card.cvv,
-      };
-    }
-
-    const { ok, error, data } = await createTransaction(payload);
+    const { ok, error, data } = await createCardTransaction(payload);
 
     if (!ok || !data) {
       return NextResponse.json({ error }, { status: 502 });
     }
 
-    if (paymentMethod === 'pix') {
-      const pixText = data.pix.qrcode as string;
-      const qrcodeImage = await QRCode.toDataURL(pixText, { width: 256, margin: 2 });
-      return NextResponse.json({ pix: { qrcodeImage, copyText: pixText, transactionId: data.id } });
-    }
+    // CAPI para cartão — dispara imediatamente no servidor
+    sendPurchaseCAPI({
+      eventId:   String(data.id),
+      value:     valueInBRL,
+      contentId,
+      customer:  capiCustomer,
+      sourceUrl,
+    }).catch(e => console.error('[CAPI] Erro cartão:', e));
 
-    return NextResponse.json(data);
-  } catch {
+    return NextResponse.json({ ...data, transactionId: data.id });
+  } catch (e) {
+    console.error('[payment] Erro interno:', e);
     return NextResponse.json({ error: 'Erro interno do servidor.' }, { status: 500 });
   }
 }
