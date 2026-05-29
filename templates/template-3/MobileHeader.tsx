@@ -55,7 +55,7 @@ export default function MobileHeader({ logoUrl }: Props) {
           </button>
 
           <div className="absolute left-1/2 transform -translate-x-1/2">
-            <img src={logoUrl} alt="Mimas Kids" className="h-24 object-contain" />
+            <img src={logoUrl} alt="Mimus Kids" className="h-24 object-contain" />
           </div>
 
           <button
@@ -74,7 +74,7 @@ export default function MobileHeader({ logoUrl }: Props) {
       {/* Overlay */}
       {isMenuOpen && (
         <div
-          className="lg:hidden fixed inset-0 z-40 bg-black/50"
+          className="lg:hidden fixed inset-0 z-[60] bg-black/50"
           onClick={() => setIsMenuOpen(false)}
         >
           <div
@@ -83,7 +83,7 @@ export default function MobileHeader({ logoUrl }: Props) {
           >
             {/* Cabeçalho do menu */}
             <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-5 py-6">
-              <img src={logoUrl} alt="Mimas Kids" className="h-16 object-contain" />
+              <img src={logoUrl} alt="Mimus Kids" className="h-16 object-contain" />
               <p className="text-white/80 text-xs mt-2">Moda infantil quentinha e estilosa</p>
             </div>
 

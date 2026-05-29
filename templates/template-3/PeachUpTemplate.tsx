@@ -244,7 +244,7 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
 
   const cartItem = {
     handle: product.slug,
-    title: `${dp.title} — ${selectedKit.label}`,
+    title: selectedKit.label,
     brand: dp.brand,
     volume: dp.volume,
     price: selectedKit.price,
@@ -258,6 +258,8 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
     if (typeof window !== 'undefined') {
       localStorage.setItem('cart', JSON.stringify([cartItem]));
     }
+    fbEvents.addToCart({ id: cartItem.sku || '', name: cartItem.title, value: selectedKit.price });
+    ttkEvents.addToCart({ id: cartItem.sku || '', name: cartItem.title, value: selectedKit.price });
     router.push('/checkout');
   };
 
@@ -265,6 +267,8 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
     if (typeof window !== 'undefined') {
       localStorage.setItem('cart', JSON.stringify([cartItem]));
     }
+    fbEvents.addToCart({ id: cartItem.sku || '', name: cartItem.title, value: selectedKit.price });
+    ttkEvents.addToCart({ id: cartItem.sku || '', name: cartItem.title, value: selectedKit.price });
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2000);
   };
@@ -680,9 +684,6 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
               <p className="text-sm text-gray-700 mt-4 mb-3">
                 ✨ Mais praticidade para o dia a dia e muito mais estilo para sua pequena!
               </p>
-              <p className="text-sm text-gray-700 mb-2">
-                <span className="font-bold">🚚 Envio rápido em até 24 horas</span>
-              </p>
               <p className="text-sm text-gray-700">
                 📏 Consulte a tabela de medidas nas imagens ou na guia de tamanho
               </p>
@@ -976,19 +977,19 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
 
         {/* FAQ */}
         {dp.faq && dp.faq.length > 0 && (
-          <div id="faq" className="mb-4">
-            <h3 className="text-base font-bold text-gray-900 mb-3">
+          <div id="faq" className="mb-3">
+            <h3 className="text-sm font-bold text-gray-900 mb-2">
               Perguntas Frequentes
             </h3>
-            <div className="space-y-2">
+            <div className="space-y-1">
               {dp.faq.map((item, idx) => (
-                <details key={idx} className="bg-white border border-gray-200 rounded-xl overflow-hidden group">
-                  <summary className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 transition-colors">
-                    <span className="font-semibold text-sm text-gray-900 pr-4">
+                <details key={idx} className="bg-white border border-gray-200 rounded-lg overflow-hidden group">
+                  <summary className="flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-gray-50 transition-colors">
+                    <span className="font-medium text-xs text-gray-900 pr-3">
                       {item.question}
                     </span>
                     <svg
-                      className="w-4 h-4 text-gray-500 transition-transform group-open:rotate-180 flex-shrink-0"
+                      className="w-3.5 h-3.5 text-gray-400 transition-transform group-open:rotate-180 flex-shrink-0"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -996,7 +997,7 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </summary>
-                  <div className="px-3 pb-3 text-xs text-gray-700 border-t border-gray-200 pt-2">
+                  <div className="px-3 pb-2 text-[11px] text-gray-600 border-t border-gray-100 pt-1.5">
                     {item.answer}
                   </div>
                 </details>
@@ -1005,66 +1006,52 @@ export default function PeachUpTemplate({ product, logoUrl }: Props) {
           </div>
         )}
 
-        {/* Benefícios de Compra */}
-        <div id="beneficios" className="bg-white border-2 border-orange-200 rounded-xl p-4 mb-4 shadow-md">
-          <h3 className="text-xs font-bold text-orange-500 mb-3 text-center uppercase tracking-widest">
-            ✓ Por que comprar conosco?
-          </h3>
-          <div className="grid grid-cols-2 gap-2">
-            {[
-              { path: "M5 13l4 4L19 7", label: "Frete Grátis", sub: "Todo Brasil" },
-              { path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", label: "Entrega Rápida", sub: "2-4 dias úteis" },
-              { path: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z", label: "Compra Segura", sub: "100% protegida" },
-              { path: "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15", label: "Troca Grátis", sub: "30 dias" },
-            ].map(({ path, label, sub }) => (
-              <div key={label} className="flex items-center gap-2 bg-orange-50 rounded-lg p-2">
-                <div className="w-9 h-9 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={path} />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-gray-900 leading-tight">{label}</p>
-                  <p className="text-[10px] text-gray-500">{sub}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Espaçamento para o footer */}
-        <div className="h-4"></div>
+        <div className="h-2"></div>
       </main>
 
       {/* Footer */}
-      <footer className="bg-gradient-to-r from-orange-500 to-orange-600 text-white py-8">
-        <div className="max-w-7xl mx-auto px-4">
-          {/* Logo */}
+      <footer className="bg-gradient-to-b from-orange-500 to-orange-700 text-white">
+        <div className="max-w-2xl mx-auto px-4 pt-6 pb-24">
+
+          {/* Logo + tagline */}
           <div className="text-center mb-4">
-            <img src={logoUrl} alt="Logo" className="h-24 object-contain mx-auto mb-3" />
+            <img src={logoUrl} alt="Mimus Kids" className="h-20 object-contain mx-auto drop-shadow-md" />
+            <p className="text-xs font-medium opacity-80 mt-1 tracking-wide">Moda Infantil com Carinho ✨</p>
           </div>
 
-          {/* CNPJ e Endereço */}
-          <div className="text-center mb-4">
-            <p className="text-sm mb-1">CNPJ: 48.244.208/0001-82</p>
-            <p className="text-xs">
-              Rua Marina Frutuoso, 695, sala 02 - Centro, Jaraguá do Sul / SC
-            </p>
+          {/* Links + Atendimento */}
+          <div className="grid grid-cols-2 gap-3 mb-4 text-xs">
+            <div>
+              <p className="text-[9px] uppercase tracking-widest font-bold opacity-50 mb-2">Informações</p>
+              <ul className="space-y-1.5">
+                <li>
+                  <a href="/politica-de-privacidade" className="opacity-80 hover:opacity-100 transition-opacity">
+                    Política de Privacidade
+                  </a>
+                </li>
+                <li>
+                  <a href="/politica-de-trocas-e-devolucoes" className="opacity-80 hover:opacity-100 transition-opacity">
+                    Trocas e Devoluções
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <p className="text-[9px] uppercase tracking-widest font-bold opacity-50 mb-2">Atendimento</p>
+              <ul className="space-y-1.5 opacity-80">
+                <li>contato@mimusbaby.shop</li>
+                <li>Seg–Sex, 9h às 18h</li>
+              </ul>
+            </div>
           </div>
 
-          {/* Copyright */}
-          <div className="text-center mb-6 pb-6 border-b border-orange-400">
-            <p className="text-xs font-semibold">
-              © Peach Up 2026 – Todos os direitos reservados.
-            </p>
+          {/* Divisor + Copyright */}
+          <div className="border-t border-white/20 pt-3 text-center">
+            <p className="text-[10px] font-semibold opacity-80">© Mimus Kids 2026 – Todos os direitos reservados.</p>
+            <p className="text-[10px] opacity-55 mt-0.5">CNPJ: 46.281.061/0001-75</p>
           </div>
 
-          {/* Texto Legal */}
-          <div className="text-center">
-            <p className="text-[10px] leading-relaxed max-w-4xl mx-auto">
-              É vedada qualquer reprodução total ou parcial sem autorização. Em caso de divergências entre preços promocionais e valores enviados por e-mail, prevalece o valor presente no site. Valores e condições podem mudar sem aviso prévio. As imagens dos produtos são meramente ilustrativas.
-            </p>
-          </div>
         </div>
       </footer>
       {/* Navbar fixa de compra */}
