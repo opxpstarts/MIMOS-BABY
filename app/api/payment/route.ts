@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
-import { sendPurchaseCAPI } from '@/lib/capi';
+import { sendPurchaseCAPI, sendCAPIEvent } from '@/lib/capi';
 import { pendingPurchases } from '@/lib/pending-purchases';
 
 const BUYPIX_URL = 'https://buypix.me/api/v1';
@@ -83,7 +83,7 @@ async function createPixDeposit(amountBRL: number, clientIp: string, idempotency
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { paymentMethod, customer, card, installments, amount, sku } = body;
+    const { paymentMethod, customer, card, installments, amount, sku, fbc, fbp } = body;
 
     const clientIp =
       req.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
@@ -95,12 +95,15 @@ export async function POST(req: NextRequest) {
     const valueInBRL = amount / 100;
 
     const capiCustomer = {
-      email:   customer.email,
-      phone:   customer.phone,
-      name:    customer.name,
-      city:    customer.city,
-      state:   customer.state,
-      zipCode: customer.zipCode,
+      email:      customer.email,
+      phone:      customer.phone,
+      name:       customer.name,
+      city:       customer.city,
+      state:      customer.state,
+      zipCode:    customer.zipCode,
+      externalId: customer.email, // email como external_id aumenta match rate
+      fbc:        fbc || undefined,
+      fbp:        fbp || undefined,
       clientIp,
       userAgent,
     };
@@ -116,7 +119,7 @@ export async function POST(req: NextRequest) {
 
       const transactionId = String(data.id);
 
-      // Guarda dados para CAPI quando PIX for confirmado
+      // Guarda dados para CAPI quando PIX for confirmado via webhook
       pendingPurchases.set(transactionId, {
         customer: capiCustomer,
         value: valueInBRL,
@@ -124,9 +127,20 @@ export async function POST(req: NextRequest) {
         sourceUrl,
       });
 
+      // CAPI Purchase para PIX pendente — mesmo eventId do webhook ao confirmar
+      // Meta deduplica automaticamente se o mesmo eventId chegar duas vezes em 48h
+      sendCAPIEvent({
+        eventName: 'Purchase',
+        eventId:   transactionId,
+        value:     valueInBRL,
+        contentId,
+        customer:  capiCustomer,
+        sourceUrl,
+      }).catch(e => console.error('[CAPI] Erro PIX pendente:', e));
+
       return NextResponse.json({
         pix: {
-          qrcodeImage: data.pix_qr_code_base64, // já é data URL base64
+          qrcodeImage: data.pix_qr_code_base64,
           copyText:    data.pix_qr_code,
           transactionId,
         },

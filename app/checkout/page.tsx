@@ -86,6 +86,7 @@ export default function CheckoutPage() {
     const cart: CartItem[] = JSON.parse(localStorage.getItem('cart') || '[]');
     const item = cart.length > 0 ? cart[0] : FALLBACK_PRODUCT;
     if (cart.length > 0) setProduct(cart[0]);
+    setFbCookies({ fbc: getCookie('_fbc'), fbp: getCookie('_fbp') });
     fbEvents.initiateCheckout({ value: item.price });
     ttkEvents.initiateCheckout({ value: item.price });
   }, []);
@@ -152,6 +153,8 @@ export default function CheckoutPage() {
           amount: Math.round(product.price * (form.pagamento === 'pix' ? 0.95 : 1) * 100),
           paymentMethod: form.pagamento === 'cartao' ? 'credit_card' : 'pix',
           sku: product.sku,
+          fbc: fbCookies.fbc || undefined,
+          fbp: fbCookies.fbp || undefined,
           customer: {
             name: form.nome,
             email: form.email,
